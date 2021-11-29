@@ -183,6 +183,10 @@ export const zakazStore = {
             })
         },
 
+        CATALOG_ITEM({ state, commit }, { user, id }) {
+            return state.data[user]?.catalog[id]
+        },
+
         //
         PAGE_BUILD({ state, commit }) {
             commit('PAGE_CHANGE', state.page + 1)

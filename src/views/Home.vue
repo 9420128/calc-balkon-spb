@@ -10,49 +10,20 @@
             >
                 <tr>
                     <th>{{ user.name }}</th>
-                    <th>Дата</th>
+                    <th width="100px">Дата</th>
                 </tr>
                 <tr
                     v-for="(zakaz, i) in BD_DATA_ALL[user.id].catalog"
                     :key="zakaz.id"
                 >
                     <td>
-                        <router-link :to="'/edit/' + i">{{
+                        <router-link :to="'/edit/' + user.id + '/' + i">{{
                             zakaz.key
                         }}</router-link>
                     </td>
                     <td>{{ zakaz.data }}</td>
                 </tr>
-                <!-- <tr v-for="(zakaz, i) in BD_ZAKAZ_PAGINATION" :key="zakaz.id">
-                    <td>
-                        <router-link :to="'/edit/' + zakaz.id">{{
-                            i + 1
-                        }}</router-link>
-                    </td>
-                    <td nowrap>
-                        {{ zakaz.user.name }} <br />
-                        <a :href="'tel:+' + tel_sort(zakaz.user.phone)">{{
-                            zakaz.user.phone
-                        }}</a>
-                        <br />
-                        {{ zakaz.user.mail }} <br />
-                        <i>{{ zakaz.zakaz.id }} от {{ zakaz.zakaz.time }}</i>
-                        <div v-if="zakaz.comment" style="color: #999">
-                            {{ zakaz.comment }}
-                        </div>
-                    </td>
-                    <td nowrap>
-                        <span
-                            class="table__product"
-                            v-for="card in zakaz.zakaz.card[0].title"
-                            :key="card[0]"
-                            >{{ card }}
-                        </span>
-                    </td>
-                </tr> -->
             </table>
-
-            <!-- <div ref="observer" class="observer"></div> -->
         </div>
     </div>
 </template>
@@ -72,7 +43,7 @@ export default {
         loader: false,
     }),
     mounted() {
-        console.log(this.BD_DATA_ALL)
+        // console.log(this.BD_DATA_ALL)
     },
 }
 </script>

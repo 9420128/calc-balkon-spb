@@ -30,7 +30,7 @@ const routes = [
     },
 
     {
-        path: '/edit/:id',
+        path: '/edit/:user/:id',
         name: 'edit',
         meta: { layout: 'main', auth: true },
         component: () => import('../views/Edit.vue'),
