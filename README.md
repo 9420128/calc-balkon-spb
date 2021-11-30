@@ -1,4 +1,4 @@
-# shablon
+# calc-balkon-spb
 
 ## Project setup
 ```
