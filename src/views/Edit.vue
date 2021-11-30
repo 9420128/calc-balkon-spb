@@ -1,9 +1,7 @@
 <template>
     <div class="edit">
         <h1>
-            {{
-                BD_DATA_ALL[$route.params.user]?.catalog[$route.params.id].name
-            }}
+            {{ catalog_item }}
         </h1>
     </div>
 </template>
@@ -17,20 +15,28 @@ export default {
     data: () => ({
         data: {},
     }),
-    mounted() {
-        this.data = this.CATALOG_ITEM(
-            this.$route.params.user,
-            this.$route.params.id
-        )
-
-        console.log(this.data)
+    async mounted() {
+        // console.log(data)
     },
     computed: {
         // ...mapGetters(['BD_USER_ALL']),
         ...mapGetters(['BD_DATA_ALL']),
+        ...mapGetters(['BD_ZAKAZ_ITEM']),
+
+        catalog_item() {
+            const user = this.$route.params.user
+            const id = this.$route.params.id
+            return this.BD_DATA_ALL[user]?.catalog[id]
+        },
+
+        sd_item() {
+            const user = this.$route.params.user
+            const id = this.$route.params.id
+            return this.BD_DATA_ALL[user]?.sd[id]
+        },
     },
     methods: {
-        ...mapActions(['CATALOG_ITEM']),
+        // ...mapActions(['CATALOG_ITEM']),
     },
 }
 </script>

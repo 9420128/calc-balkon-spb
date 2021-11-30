@@ -105,7 +105,7 @@ export const zakazStore = {
             return state.zakaz_pagination
         },
 
-        ZAKAZ_ITEM(state) {
+        BD_ZAKAZ_ITEM(state) {
             return state.zakaz_item
         },
 
@@ -183,9 +183,10 @@ export const zakazStore = {
             })
         },
 
-        CATALOG_ITEM({ state, commit }, { user, id }) {
-            return state.data[user]?.catalog[id]
-        },
+        // CATALOG_ITEM({ state, commit }, { user, id }) {
+        //     // commit('ZAKAZ_ITEM_CHANGE', state.data[user]?.catalog[id])
+        //     return state.data[user]?.catalog[id]
+        // },
 
         //
         PAGE_BUILD({ state, commit }) {
@@ -203,19 +204,19 @@ export const zakazStore = {
         //     })
         // },
 
-        async ZAKAZ_ITEM_BUILD({ commit }, id) {
-            // commit('zakaz_CHANGE', value)
-            const uid = await getAuth().currentUser.uid
-            const db = getDatabase()
-            await onValue(
-                ref(db, `/users/${uid}/zakazAll/${id}`),
-                (snapshot) => {
-                    const data = snapshot.val()
-                    commit('ZAKAZ_ITEM_CHANGE', data)
-                    // this.zakaz_BUILD(data)
-                }
-            )
-        },
+        // async ZAKAZ_ITEM_BUILD({ commit }, id) {
+        //     // commit('zakaz_CHANGE', value)
+        //     const uid = await getAuth().currentUser.uid
+        //     const db = getDatabase()
+        //     await onValue(
+        //         ref(db, `/users/${uid}/zakazAll/${id}`),
+        //         (snapshot) => {
+        //             const data = snapshot.val()
+        //             commit('ZAKAZ_ITEM_CHANGE', data)
+        //             // this.zakaz_BUILD(data)
+        //         }
+        //     )
+        // },
 
         PAGINATION_NULL_BUILD({ commit }, val) {
             commit('ZAKAZ_SORT_CHANGE', val)
