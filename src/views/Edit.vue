@@ -1,7 +1,7 @@
 <template>
     <div class="edit">
         <h1>
-            {{ catalog_item }}
+            {{ catalog_item.adres }}
         </h1>
     </div>
 </template>
