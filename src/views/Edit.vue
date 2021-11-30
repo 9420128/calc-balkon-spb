@@ -1,17 +1,20 @@
 <template>
     <div class="edit">
         <h1>
-            {{ catalog_item.adres }}
+            {{ catalog_item?.key }}
         </h1>
+
+        <EditTable :catalog="catalog_item" :sd="sd_item" />
     </div>
 </template>
 
 <script>
 /* eslint-disable */
 import { mapGetters, mapActions } from 'vuex'
+import EditTable from '../components/app/EditTable.vue'
 export default {
     name: 'Edit',
-    components: {},
+    components: { EditTable },
     data: () => ({
         data: {},
     }),

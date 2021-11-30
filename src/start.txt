@@ -132,8 +132,11 @@ const summ = new Intl.NumberFormat('ru-RU').format(val) + 'р.'
 
 .......................  vue ........................
 
-ref="inputSearch"
-this.$refs.inputSearch.focus()
+ref="textarea"
+ setTimeout(() => {
+    this.$refs.textarea.select()
+    // this.$refs.textarea.focus()
+}, 0)
 
 $route.params.id
 

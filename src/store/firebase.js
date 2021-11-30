@@ -54,11 +54,11 @@ export default {
         /// отправить данные на сервер
         /// val.folder - папака,  val.text - значение
 
-        async createValueSet({ commit, dispatch }, val) {
+        async createValueSet({ commit }, val) {
             try {
-                const uid = await dispatch('getUid')
+                // const uid = await dispatch('getUid')
                 const db = getDatabase()
-                await set(ref(db, `users/${uid}/${val.folder}`), val.text)
+                await set(ref(db, `${val.folder}`), val.text)
 
                 return {
                     val,
@@ -234,6 +234,22 @@ export default {
                     const uid = await dispatch('getUid')
                     const db = getDatabase()
                     await remove(ref(db, `/users/${uid}/${folder}`))
+                    return true
+                } catch (e) {
+                    commit('setError', e)
+                    throw e
+                }
+            else return false
+        },
+
+        // удаление  из базы данных
+        async removeFolder({ commit }, folder) {
+            let isAdmin = confirm('Данные будут удалены?')
+
+            if (isAdmin)
+                try {
+                    const db = getDatabase()
+                    await remove(ref(db, folder))
                     return true
                 } catch (e) {
                     commit('setError', e)
