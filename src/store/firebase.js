@@ -75,9 +75,7 @@ export default {
                 const db = getDatabase()
                 await push(ref(db, `users/${uid}/${val.folder}`), val.text)
 
-                return {
-                    val,
-                }
+                return true
             } catch (e) {
                 commit('setError', e)
                 throw e

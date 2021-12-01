@@ -79,6 +79,7 @@ export default {
     border-bottom: 1px solid #eeeeee;
     /* color: #4aae9b; */
     justify-content: space-between;
+    align-items: center;
 }
 
 .modal-footer {

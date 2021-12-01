@@ -5,7 +5,7 @@
             :key="tab.id"
             :class="{ active: hash === tab.id }"
         >
-            <a @click="select_tab(tab.id)" :href="'#' + tab.id" class="">{{
+            <a @click="select_tab(tab.id)" :href="'#' + tab.id">{{
                 tab.name
             }}</a>
         </li>
@@ -43,8 +43,10 @@ export default {
     },
     watch: {
         tabs() {
-            this.hash = this.tabs[0]?.id
-            this.$router.push('#' + this.hash)
+            if(!this.hash){
+                this.hash = this.tabs[0]?.id
+                this.$router.push('#' + this.hash)
+            }
         },
     },
     methods: {
@@ -53,7 +55,6 @@ export default {
         },
         select_admin_tab(id) {
             this.hash = id
-            console.log(id)
         },
     },
 }

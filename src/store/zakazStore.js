@@ -7,6 +7,7 @@ export const zakazStore = {
         zakaz: {},
         user: {},
         data: {},
+        uid: '',
         zakaz_item: {},
         page: 0,
         page_caunt: 10,
@@ -17,6 +18,10 @@ export const zakazStore = {
     }),
 
     getters: {
+        BD_UID(state) {
+            return state.uid
+        },
+
         BD_ZAKAZ_ALL(state) {
             return state.zakaz
         },
@@ -27,6 +32,16 @@ export const zakazStore = {
                 ...state.user[key],
                 id: key,
             }))
+        },
+
+        BD_USER_ITEM(state) {
+            // const uid = await dispatch('getUid')
+
+            return state.user[state.uid]
+            // return Object.keys(state.user[uid]).map((key) => ({
+            //     ...state.user[uid][key],
+            //     id: key,
+            // }))
         },
 
         BD_DATA_ALL(state) {
@@ -129,6 +144,10 @@ export const zakazStore = {
         },
     },
     mutations: {
+        UID_CHANGE(state, val) {
+            state.uid = val
+        },
+
         USER_ALL_CHANGE(state, val) {
             state.user = val
         },
@@ -164,7 +183,8 @@ export const zakazStore = {
     },
     actions: {
         async USER_ALL_BUILD({ commit }) {
-            // const uid = await getAuth().currentUser.uid
+            const uid = await getAuth().currentUser.uid
+            commit('UID_CHANGE', uid)
             const db = getDatabase()
             await onValue(ref(db, `/users`), (snapshot) => {
                 const data = snapshot.val()
