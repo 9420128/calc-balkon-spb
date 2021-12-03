@@ -6,9 +6,19 @@ export const settingStore = {
     state: () => ({
         setting: {},
         status_item: '',
+        material_f: ['h*w', 'h+w', '(h+w)*2', 'h', 'w', 'h*2', 'w*2'],
+        material_i: ['м/кв', 'м/п', 'заказ', 'этаж', 'точка', 'слой', 'шт.'],
     }),
 
     getters: {
+        BD_MATERIAL_F(state) {
+            return state.material_f
+        },
+
+        BD_MATERIAL_I(state) {
+            return state.material_i
+        },
+
         BD_SETTING(state) {
             return state.setting
         },

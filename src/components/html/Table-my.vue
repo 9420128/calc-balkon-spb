@@ -1,5 +1,5 @@
 <template>
-    <table class="table table-divider table-hover">
+    <table class="table table-divider">
         <slot></slot>
     </table>
 </template>

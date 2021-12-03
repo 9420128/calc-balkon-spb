@@ -54,15 +54,13 @@ export default {
         /// отправить данные на сервер
         /// val.folder - папака,  val.text - значение
 
-        async createValueSet({ commit }, val) {
+        async createValueSet({ commit, dispatch }, val) {
             try {
-                // const uid = await dispatch('getUid')
+                const uid = await dispatch('getUid')
                 const db = getDatabase()
-                await set(ref(db, `${val.folder}`), val.text)
+                await set(ref(db, `users/${uid}/${val.folder}`), val.text)
 
-                return {
-                    val,
-                }
+                return true
             } catch (e) {
                 commit('setError', e)
                 throw e

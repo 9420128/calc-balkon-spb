@@ -13,12 +13,21 @@
                 >Выберите из списка</option
             >
             <option
+                v-if="!no_id"
                 v-for="option in options"
                 :key="option.id"
                 :value="option.id"
-                :selected="option.id == selected || option.name == selected"
-                >{{ option.name }}</option
-            >
+                :selected="option.id == selected || option.name == selected">
+                {{ option.name }}
+            </option>
+            <option
+                v-else
+                v-for="(option, index) in options"
+                :key="index"
+                :value="index"
+                :selected="option == selected">
+                {{option}}
+            </option>
         </select>
     </div>
 </template>
@@ -52,6 +61,7 @@ export default {
         labelClass: String,
         selectClass: String,
         name: String,
+        no_id:  { type: Boolean, default: () => false },
     },
 
     methods: {

@@ -3,7 +3,7 @@
     <div class="home" v-else>
         <h1>Заказы</h1>
         <div class="overlow m-top">
-            <TableMy v-for="user in BD_USER_ALL" :key="user.id">
+            <TableMy v-for="user in BD_USER_ALL" :key="user.id" class="table-hover">
                 <tr>
                     <th>{{ user.name }}</th>
                     <th width="100px">Дата</th>
