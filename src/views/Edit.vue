@@ -1,20 +1,26 @@
 <template>
     <div class="edit">
         <h1>
-            {{ catalog_item?.key }}
+            {{ catalog_item?.adres }}
         </h1>
-
-        <EditTable :catalog="catalog_item" :sd="sd_item" />
+        <!-- <grid> -->
+        <!-- <div> -->
+        <calc :catalog_bd="catalog_item" :sd_bd="sd_item" />
+        <!-- </div> -->
+        <!-- <EditTable :catalog="catalog_item" :sd="sd_item"/> -->
+        <!-- </grid> -->
     </div>
 </template>
 
 <script>
 /* eslint-disable */
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import EditTable from '../components/app/EditTable.vue'
+import Grid from '../components/html/Grid.vue'
+import Calc from './Calc.vue'
 export default {
     name: 'Edit',
-    components: { EditTable },
+    components: { EditTable, Grid, Calc },
     data: () => ({
         data: {},
     }),

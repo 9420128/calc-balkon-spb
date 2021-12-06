@@ -16,10 +16,10 @@ const routes = [
     },
 
     {
-        path: '/zakaz',
-        name: 'Zakaz',
+        path: '/calc',
+        name: 'Calc',
         meta: { layout: 'main', auth: true },
-        component: () => import('../views/Zakaz.vue'),
+        component: () => import('../views/Calc.vue'),
     },
 
     {

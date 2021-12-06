@@ -2,7 +2,7 @@
     <Loader v-if="loader" />
     <div class="price">
         <h1>Прайс</h1>
-        <Tabs :tabs="id_map(BD_USER_ITEM?.prise?.tabs)" class="m-top"/>
+        <Tabs :tabs="id_map(BD_PRISE_TABS)" class="m-top" />
 
         <div v-if="flag_edit">
             <table class="table table-divider">
@@ -12,22 +12,21 @@
                         <th>Расположение в меню</th>
                     </tr>
                 </thead>
-                <tbody  @click="price_edit_click($event.target)" class="edit">
-                <tr>
-                    <td
-                        :data-id="hash_id"
-                        data-key="tabs">
-                        {{ BD_USER_ITEM.prise.tabs[hash_id]?.name }}
-                    </td>
-                    <td nowrap>{{ BD_USER_ITEM.prise.tabs[hash_id]?.num }}</td>
-
-                </tr>
+                <tbody @click="price_edit_click($event.target)" class="edit">
+                    <tr>
+                        <td :data-id="hash_id" data-key="tabs">
+                            {{ BD_PRISE_TABS[hash_id]?.name }}
+                        </td>
+                        <td nowrap>
+                            {{ BD_PRISE_TABS[hash_id]?.num }}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-        
+
         <div class="m-top">
-            <TableMy>
+            <TableMy id="print">
                 <thead>
                     <tr>
                         <th>Вид работ</th>
@@ -36,98 +35,140 @@
                         <th width="80px">Руб.</th>
                     </tr>
                 </thead>
-                <tbody @click="price_edit_click($event.target)" :class="{'edit': flag_edit}">
-                    <tr
-                        v-if="catalog_filter"
-                        v-for="catalog in catalog_filter"
-                        :key="catalog.id"
-                    >
-                        <td
-                            :data-id="catalog.id"
-                            data-key="catalog"
-                        >
+                <tbody
+                    v-if="catalog_filter && catalog_filter.length"
+                    @click="price_edit_click($event.target)"
+                    :class="{ edit: flag_edit }"
+                >
+                    <tr v-for="catalog in catalog_filter" :key="catalog.id">
+                        <td :data-id="catalog.id" data-key="catalog">
                             {{ catalog?.name }}
                         </td>
 
                         <td style="padding: 0" colspan="3">
                             <table class="tr-table table-divider">
-                               <tbody :class="{'edit': flag_edit}">
-                                   <tr v-for="material in material_filter(catalog.id)" :key="material.id">
-                                       <td
-                                           :data-id="material.id"
-                                           data-key="material">
-                                           {{ material.name }}
-                                       </td>
-                                       <td width="80px" nowrap>{{ material.material_i }}</td>
-                                       <td width="80px" nowrap>{{ material.material_sum }}</td>
-                                   </tr>
-                               </tbody>
+                                <tbody :class="{ edit: flag_edit }">
+                                    <tr
+                                        v-for="material in material_filter(
+                                            catalog.id
+                                        )"
+                                        :key="material.id"
+                                    >
+                                        <td
+                                            :data-id="material.id"
+                                            data-key="material"
+                                        >
+                                            {{ material.name }}
+                                        </td>
+                                        <td width="80px" nowrap>
+                                            {{ material.material_i }}
+                                        </td>
+                                        <td width="80px" nowrap>
+                                            {{ material.material_sum }}
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </td>
                     </tr>
                 </tbody>
             </TableMy>
-            <div class="btn-grup">
-                <Btn class="btn-prim" @click="price_tabs">Услуга <icon icon="add"/></Btn>
-                <Btn class="btn-prim" @click="price_catalog">Вид работы <icon icon="add"/></Btn>
-                <Btn class="btn-prim" @click="price_material">Материал <icon icon="add"/></Btn>
-                <Btn class="btn-danger" @click="flag_edit = !flag_edit">Редактировать <icon icon="edit"/></Btn>
+            <div class="btn-grup m-top-2">
+                <Btn class="btn-prim" @click="btn_tabs_click"
+                    >Услуга <icon icon="add"
+                /></Btn>
+
+                <!-- v-if="flag_catalog" -->
+                <Btn class="btn-prim" @click="btn_catalog_click"
+                    >Вид работы <icon icon="add"
+                /></Btn>
+                <Btn
+                    v-if="catalog_filter && catalog_filter.length"
+                    class="btn-prim"
+                    @click="btn_material_click"
+                    >Материал <icon icon="add"
+                /></Btn>
+                <Btn class="btn-danger" @click="flag_edit = !flag_edit"
+                    >Редактировать <icon icon="edit"
+                /></Btn>
+                <print />
             </div>
         </div>
-       
     </div>
 
     <form @submit.prevent="submit_modal()">
         <Modal v-show="modal" @close="close_modal">
             <template v-slot:header>
-                {{modal_header}}
+                {{ modal_header }}
             </template>
             <template v-slot:body>
-               <grid>
-                   <div>
-                       <label>Наименование</label>
-                       <textarea
-                           class="textarea wrap"
-                           ref="textarea"
-                           v-model="data_text"
-                           id="name1"
-                       ></textarea>
-                   </div>
-                   <div>
-                       <div v-if="flag_material">
-                           <sel label="Вид работы"
-                                v-if="catalog_filter"
+                <grid>
+                    <div>
+                        <label>Наименование</label>
+                        <textarea
+                            class="textarea wrap"
+                            ref="textarea"
+                            v-model="data_text"
+                            id="name1"
+                        ></textarea>
+                    </div>
+                    <div>
+                        <div v-if="flag_material">
+                            <sel
+                                label="Вид работы"
+                                v-if="catalog_filter.length"
                                 :options="catalog_filter"
                                 :selected_disabled="true"
                                 @change="catalog_id = $event.target.value"
                                 :selected="catalog_id ? catalog_id : ''"
-                           />
+                            />
 
-                           <input-icon type="tel" label="Стоимость, (руб.)" v-model="material_sum" />
+                            <input-icon
+                                type="tel"
+                                label="Стоимость, (руб.)"
+                                v-model="material_sum"
+                            />
 
-                           <sel label="Еденица измерения"
+                            <sel
+                                label="Еденица измерения"
                                 :options="BD_MATERIAL_I"
-                                @change="material_i = $event.target.options[$event.target.selectedIndex].text"
+                                @change="
+                                    material_i =
+                                        $event.target.options[
+                                            $event.target.selectedIndex
+                                        ].text
+                                "
                                 :no_id="true"
                                 :selected_disabled="true"
                                 :selected="material_i ? material_i : ''"
-                           />
+                            />
 
-                           <sel label="Формула подсчета"
+                            <sel
+                                label="Формула подсчета"
                                 :options="BD_MATERIAL_F"
-                                @change="material_f = $event.target.options[$event.target.selectedIndex].text"
+                                @change="
+                                    material_f =
+                                        $event.target.options[
+                                            $event.target.selectedIndex
+                                        ].text
+                                "
                                 :no_id="true"
                                 :selected_disabled="true"
                                 :selected="material_f ? material_f : ''"
-                           />
-
-                       </div>
-                       <input-icon type="tel" label="Расположение в меню" v-model="menu_num" />
-                       <div v-if="flag_remove" class="wrap">
-                           <Btn class="btn-danger" @click.prevent="item_remove">Удалить <icon icon="delete"/></Btn>
-                       </div>
-                   </div>
-               </grid>
+                            />
+                        </div>
+                        <input-icon
+                            type="tel"
+                            label="Расположение в меню"
+                            v-model="menu_num"
+                        />
+                        <div v-if="flag_remove" class="wrap">
+                            <Btn class="btn-danger" @click.prevent="item_remove"
+                                >Удалить <icon icon="delete"
+                            /></Btn>
+                        </div>
+                    </div>
+                </grid>
             </template>
             <template v-slot:footer>
                 <div class="btn-grup">
@@ -150,37 +191,52 @@
 <script>
 import Loader from '../components/app/Loader.vue'
 /* eslint-disable */
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import TableMy from '../components/html/Table-my.vue'
 import Btn from '../components/html/Btn.vue'
 import Modal from '../components/app/Modal.vue'
-import Tabs from "@/components/app/Tabs";
-import Icon from "@/components/html/Icon";
-import Grid from "@/components/html/Grid";
-import InputIcon from "@/components/html/InputIcon";
-import Sel from "@/components/html/Sel";
+import Tabs from '@/components/app/Tabs'
+import Icon from '@/components/html/Icon'
+import Grid from '@/components/html/Grid'
+import InputIcon from '@/components/html/InputIcon'
+import Sel from '@/components/html/Sel'
+import Print from '../components/app/Print.vue'
 
 export default {
     name: 'price',
-    components: {Sel, InputIcon, Grid, Icon, Tabs, Btn, TableMy, Loader, Modal },
+    components: {
+        Sel,
+        InputIcon,
+        Grid,
+        Icon,
+        Tabs,
+        Btn,
+        TableMy,
+        Loader,
+        Modal,
+        Print,
+    },
     computed: {
-        // ...mapGetters(['BD_USER_ALL']),
         ...mapGetters(['BD_MATERIAL_F']),
         ...mapGetters(['BD_MATERIAL_I']),
-        ...mapGetters(['BD_USER_ITEM']),
+        ...mapGetters(['BD_USER_PRISE']),
+        ...mapGetters(['BD_PRISE_TABS']),
+        ...mapGetters(['BD_PRISE_CATALOG']),
+        ...mapGetters(['BD_PRISE_MATERIAL']),
 
-        catalog_filter(){
-            if(this.BD_USER_ITEM?.prise?.catalog) {
-                const arr = this.id_map(this.BD_USER_ITEM?.prise?.catalog)
-                if(arr && this.$route.hash)
-                    return arr.filter(el => el.tab_id === this.$route.hash.replace('#', ''))
+        catalog_filter() {
+            if (this.BD_PRISE_CATALOG) {
+                const arr = this.id_map(this.BD_PRISE_CATALOG)
+                if (arr && this.$route.hash)
+                    return arr.filter(
+                        (el) => el.tab_id === this.$route.hash.replace('#', '')
+                    )
                 else return false
             }
         },
 
-        hash_id(){
-            if(this.$route.hash)
-                return this.$route.hash.replace('#', '')
+        hash_id() {
+            if (this.$route.hash) return this.$route.hash.replace('#', '')
         },
     },
     data: () => ({
@@ -192,6 +248,8 @@ export default {
         tab_id: '',
         catalog_id: '',
         menu_num: 1,
+        flag_tabs: false,
+        flag_catalog: false,
         flag_material: false,
         flag_edit: false,
         flag_remove: true,
@@ -199,21 +257,20 @@ export default {
         material_sum: '',
         material_i: '',
         material_f: '',
-
     }),
     methods: {
-        price_edit_click(event){
-            if(!this.flag_edit) return
+        price_edit_click(event) {
+            if (!this.flag_edit) return
 
-            const key = event.dataset.key? event.dataset.key : ''
-            const id = event.dataset.id? event.dataset.id : ''
+            const key = event.dataset.key ? event.dataset.key : ''
+            const id = event.dataset.id ? event.dataset.id : ''
 
-            if(event.tagName === 'TD' && key && id){
+            if (event.tagName === 'TD' && key && id) {
                 this.modal_header = 'Редактирование'
                 this.folder = `prise/${key}/${id}`
                 this.data_text = event.textContent
 
-                const item = this.prise()[key][id]
+                const item = this.BD_USER_PRISE[key][id]
 
                 this.menu_num = item.num
 
@@ -223,78 +280,103 @@ export default {
                 this.material_i = item.material_i ? item.material_i : ''
                 this.material_f = item.material_f ? item.material_f : ''
 
-                if(this.material_sum)
-                    this.flag_material = true
-
-                if(key === 'tabs'){
-                    if(this.prise()['tabs'] && Object.keys(this.prise()['tabs']).length === 1)
+                if (key === 'tabs') {
+                    this.flag_tabs = true
+                    if (
+                        this.BD_PRISE_TABS &&
+                        Object.keys(this.BD_PRISE_TABS).length === 1
+                    )
                         this.flag_remove = false
-                    
-                    const arr = this.prise()['catalog']
 
-                    for (let i in arr){
+                    const arr = this.BD_PRISE_CATALOG
+
+                    for (let i in arr) {
                         const el = arr[i]
-                        if(el.tab_id === id)
-                            this.flag_remove = false
+                        if (el.tab_id === id) this.flag_remove = false
                     }
                 }
 
-                if(key === 'catalog'){
-                    const arr = this.prise()['material']
+                if (key === 'catalog') {
+                    this.flag_catalog = true
+                    const arr = this.BD_PRISE_MATERIAL
 
-                    for (let i in arr){
+                    for (let i in arr) {
                         const el = arr[i]
-                        if(el.catalog_id === id)
-                            this.flag_remove = false
+                        if (el.catalog_id === id) this.flag_remove = false
                     }
+                }
+
+                if (key === 'material') {
+                    this.flag_material = true
                 }
 
                 this.show_modal()
             }
         },
 
-       prise(){
-            return this.BD_USER_ITEM?.prise
-        },
-
-        material_filter(id){
-            if(this.prise().material) {
-                const arr = this.id_map(this.prise().material)
-                return arr.filter(el => el.catalog_id === id)
+        material_filter(id) {
+            if (this.BD_PRISE_MATERIAL) {
+                const arr = this.id_map(this.BD_PRISE_MATERIAL)
+                return arr.filter((el) => el.catalog_id === id)
             }
         },
 
-        id_map(arr){
-            if (arr)
-                return Object.keys(arr).map((key) => ({
+        id_map(arr) {
+            if (arr) {
+                const array = Object.keys(arr).map((key) => ({
                     ...arr[key],
                     id: key,
                 }))
+
+                return array.sort((a, b) => a.num - b.num)
+            }
+        },
+
+        async prise_key_arr(key) {
+            if (key) {
+                return await Object.keys(key)
+            } else return false
+        },
+
+        notic(text) {
+            return this.$store.dispatch('notic', text)
         },
 
         async submit_modal() {
-            // if(!this.data_text || !this.folder){
-            //     this.close_modal()
-            //     return this.$store.dispatch('notic', 'Отмена! Не все поля заполнены')
-            // }
-
             const val = {
                 folder: this.folder,
                 text: {
-                    name : this.data_text,
-                    num : this.menu_num
+                    name: this.data_text,
+                    num: this.menu_num,
                 },
             }
 
-            if(this.tab_id)
-                val.text.tab_id = this.tab_id
+            if (!val.text.name)
+                return this.notic('Отмена! Не заполнено поле Наименование')
 
-            if(this.flag_material){
+            if (isNaN(val.text.num))
+                return this.notic(
+                    'Отмена! Поле Расположение в меню заполнено не корректно'
+                )
+
+            if (this.tab_id) val.text.tab_id = this.tab_id
+
+            if (this.flag_material) {
+                if (isNaN(this.material_sum)) {
+                    this.material_sum = this.material_sum.replace(',', '.')
+                    if (isNaN(this.material_sum))
+                        return this.notic(
+                            'Отмена! Поле Стоимость заполнено не корректно'
+                        )
+                }
+
                 val.text.catalog_id = this.catalog_id
                 val.text.material_sum = this.material_sum
                 val.text.material_i = this.material_i
                 val.text.material_f = this.material_f
 
+                if (!val.text.catalog_id)
+                    return this.notic('Отмена! Не заполнено поле Вид работы')
             }
 
             try {
@@ -316,46 +398,52 @@ export default {
             }
         },
 
-        submit_success(success){
+        submit_success(success) {
             if (success) {
-                this.$store.dispatch('notic', 'Изменения сохранены')
+                this.notic('Изменения сохранены')
 
                 this.tab_id = this.folder = ''
-                if(this.flag_material) this.flag_material = false
-                this.material_sum = this.material_i = this.material_f = this.catalog_id = ''
 
-                this.menu_num ++
+                this.material_sum =
+                    this.material_i =
+                    this.material_f =
+                    this.catalog_id =
+                        ''
+
+                this.menu_num++
 
                 this.close_modal()
             }
         },
 
-        price_tabs(){
+        btn_tabs_click() {
             this.flag_edit = false
             this.flag_remove = false
+            this.flag_tabs = true
             this.modal_header = 'Добавить услугу'
             this.folder = 'prise/tabs'
 
             this.show_modal()
         },
 
-        price_catalog() {
+        btn_catalog_click() {
             this.flag_edit = false
             this.flag_remove = false
+            this.flag_catalog = true
             this.modal_header = 'Добавить вид работы'
             this.folder = 'prise/catalog'
             this.tab_id = this.$route.hash.replace('#', '')
             this.show_modal()
         },
 
-        price_material(){
+        btn_material_click() {
             this.flag_edit = false
             this.flag_remove = false
             this.flag_material = true
+            this.modal_header = 'Добавить материал'
             this.folder = 'prise/material'
 
             this.show_modal()
-
         },
 
         show_modal() {
@@ -369,18 +457,20 @@ export default {
 
         close_modal() {
             this.modal = false
+            this.flag_tabs = false
+            this.flag_catalog = false
+            this.flag_material = false
             this.flag_remove = true
             this.flag_remove_click = true
         },
 
-        async item_remove(){
-
+        async item_remove() {
             this.flag_remove_click = false
 
             const folder = this.folder
 
             try {
-                if(folder) {
+                if (folder) {
                     const success = await this.$store.dispatch(
                         'removeBd',
                         folder
@@ -394,13 +484,28 @@ export default {
                 console.log(e)
             }
 
-            const hash_arr = this.prise()['tabs'] ? Object.keys(this.prise()['tabs']) : ''
+            const hash_arr = await this.prise_key_arr(this.BD_PRISE_TABS)
 
-            if(hash_arr)this.$router.push('#' + hash_arr[0])
+            if (hash_arr) this.$router.push('#' + hash_arr[0])
             else this.$router.push('price')
 
             this.flag_edit = false
-        }
+        },
+    },
+
+    watch: {
+        // '$route.hash': {
+        //     handler: function (hash) {
+        //         this.catalog_filter
+        //         // const id = hash.replace('#', '')
+        //         // for (let i in this.BD_PRISE_CATALOG) {
+        //         //     const el = this.BD_PRISE_CATALOG[i]
+        //         //     // if (el.tab_id === id) this.flag_catalog = false
+        //         // }
+        //     },
+        //     deep: true,
+        //     immediate: true,
+        // },
     },
 }
 </script>
@@ -411,14 +516,14 @@ export default {
     width: 100%;
 }
 
-.tr-table tr:last-child{
+.tr-table tr:last-child {
     border-bottom: none;
 }
 
-.edit{
+.edit {
     background-color: #f4f4f4;
 }
-.edit>tr>td:first-child:hover{
+.edit > tr > td:first-child:hover {
     background-color: #ffc2b9;
 }
 </style>

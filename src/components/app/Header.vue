@@ -46,7 +46,7 @@ export default {
             { to: '/', text: 'Главная' },
             { to: '/price', text: 'Прайс' },
             { to: '/contact', text: 'Контакты' },
-            { to: '/zakaz', text: 'Заказ' },
+            { to: '/calc', text: 'Калькулятор' },
         ],
     }),
     mounted() {},

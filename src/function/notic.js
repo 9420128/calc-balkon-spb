@@ -3,7 +3,7 @@
 export default {
     actions: {
         notic({ dispatch, commit }, html) {
-            let timer = 3000
+            let timer = 4000
 
             let notic = document.createElement('div')
             notic.className = 'notic'

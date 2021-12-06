@@ -1,20 +1,20 @@
 <template>
     <div class="edit-table">
-        <div ref="printer" id="print">
+        <div id="print">
             <h3>
                 Спецификация №
                 <span
                     class="edit-text"
                     @click="edit_catalog($event.target)"
                     data-key="spec"
-                    >{{ catalog?.spec }}
+                    >{{ catalog_spec }}
                 </span>
                 от
                 <span
                     class="edit-text"
                     @click="edit_catalog($event.target)"
                     data-key="data"
-                    >{{ catalog?.data }}
+                    >{{ catalog_date }}
                 </span>
             </h3>
             <p class="text-border">
@@ -101,13 +101,18 @@
             </div>
             <div class="">
                 <h3>
-                    Итого стоимость заказа: <span>{{ summ }}</span> рублей
+                    Итого стоимость заказа:
+                    <span>{{
+                        new Intl.NumberFormat('ru-RU').format(summ)
+                    }}</span>
+                    рублей
                 </h3>
                 <div class="wrap">
                     <p class="edit_prim">
                         <b>Примечание:</b><br />
                         <span
                             class="edit-text"
+                            :class="{ empty: !catalog?.prim }"
                             @click="edit_catalog($event.target)"
                             data-key="prim"
                             >{{ catalog?.prim }}</span
@@ -150,31 +155,29 @@
             </div>
         </div>
 
-        <div class="btn-grup m-top">
-            <p>&nbsp;</p>
-            <button
-                type="button"
-                class="btn btn-danger"
-                @click.prevent="sd_remove"
-            >
+        <div class="btn-grup m-top-2">
+            <Btn class="btn-danger" @click.prevent="sd_remove">
                 Удалить
                 <icon icon="delete" />
-            </button>
+            </Btn>
 
-            <button type="button" @click="print" class="btn btn-prim">
-                Распечатать <icon icon="print" />
-            </button>
+            <print />
+
+            <Btn v-if="flag_save" @click.prevent="save_bd" class="btn-prim"
+                >Сохранить
+                <icon icon="save" />
+            </Btn>
         </div>
 
         <form @submit.prevent="submit_modal">
             <Modal v-show="modal" @close="close_modal">
+                <template v-slot:header> Редактирование </template>
                 <template v-slot:body>
                     <textarea
                         class="textarea wrap"
                         ref="textarea"
                         v-model="data_text"
                         id="textarea"
-                        autofocus
                     ></textarea>
                 </template>
                 <template v-slot:footer>
@@ -197,13 +200,15 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import Btn from '../html/Btn.vue'
 import Icon from '../html/Icon.vue'
 import TableMy from '../html/Table-my.vue'
 import Modal from './Modal.vue'
+import Print from './Print.vue'
 // import Icon from '../html/Icon.vue'
 export default {
-    components: { TableMy, Icon, Modal },
-    // components: { Icon },
+    components: { TableMy, Icon, Modal, Print, Btn },
     name: 'edit-table',
 
     props: {
@@ -215,14 +220,9 @@ export default {
             type: [Array, Object],
             // required: true,
         },
-    },
-
-    computed: {
-        summ() {
-            if (this.sd) {
-                const arr = this.filter_sd(this.sd)
-                return arr.reduce((accumulator, el) => accumulator + +el.p, 0)
-            }
+        flag_save: {
+            type: Boolean,
+            default: () => false,
         },
     },
 
@@ -232,45 +232,53 @@ export default {
         data_id: '',
         data_folder: '',
         data_text: '',
+        bd_id: '', // id полученный при сохранении cataloga
+        calc: true,
+        // flag_save: false,
     }),
 
-    methods: {
-        print() {
-            let printing_css = `<style media=print>
-                * {font-family: -apple-system, BlinkMacSystemFont, "Open Sans", Arial; font-size: 11px; text-align: left;}
-                #print {padding: 0 20px}
-                table {caption-side: bottom; width: 100%; border-collapse: collapse; margin-top: 25px}
-                .text-border {display: block; border-bottom: 1px solid  #999}
-                td,th {padding: 6px 8px;}
-                h3 span{font-size: 14px;}
+    mounted() {
+        if (this.catalog.adres && this.sd.length) {
+            this.calc = false
+            if (this.$route.params.id) {
+                this.bd_id = this.$route.params.id
+            }
+        }
+    },
 
-                th:nth-child(6),td:nth-child(7), .slid, #calc, button {display: none}
-                tr{border-bottom: 1px solid #999;}
-                td:nth-child(2),td:nth-child(3) {width: 45%}
-                td:nth-child(4) {padding: 6px 0, width: 1px; text-align: right}
-                td:nth-child(5) {width: 1px;  white-space: nowrap}
-                td:nth-child(6) {text-align: center; width: 1px;  white-space: nowrap}
-                h3 {font-size: 14px; font-weight: 700; margin-bottom: 20px}
-                </style>`
+    computed: {
+        ...mapGetters(['BD_UID']),
 
-            const el = this.$refs.printer
-            let html_to_print = printing_css + el.innerHTML
-            let iframe = '<iframe id="print_frame"></iframe>'
-
-            document.body.insertAdjacentHTML('beforeend', iframe)
-
-            let doc =
-                document.getElementById('print_frame').contentDocument ||
-                document.getElementById('print_frame').contentWindow.document
-            let win =
-                document.getElementById('print_frame').contentWindow ||
-                document.getElementById('print_frame')
-
-            doc.getElementsByTagName('body')[0].innerHTML = html_to_print
-            win.print()
-
-            document.getElementById('print_frame').remove()
+        summ() {
+            if (this.sd) {
+                const arr = this.filter_sd(this.sd)
+                return Math.round(
+                    arr.reduce((accumulator, el) => accumulator + +el.p, 0)
+                )
+            }
         },
+
+        catalog_date() {
+            if (this.catalog?.data) return this.catalog?.data
+            else {
+                let today = new Date()
+                let dd = String(today.getDate()).padStart(2, '0')
+                const mm = String(today.getMonth() + 1).padStart(2, '0') //January is 0!
+                let yyyy = today.getFullYear()
+                today = dd + '.' + mm + '.' + yyyy
+
+                return today
+            }
+        },
+
+        catalog_spec() {
+            let spec = this.catalog?.spec
+            if (!spec) spec = Math.floor(Math.random() * (999 - 101)) + 101
+            return spec
+        },
+    },
+
+    methods: {
         filter_sd(sd) {
             return Object.keys(sd).map((key) => {
                 if (sd[key])
@@ -294,31 +302,47 @@ export default {
         },
 
         async submit_modal() {
-            if (this.data_folder && this.data_key) {
-                const val = {
-                    folder:
-                        'data/' +
-                        this.$route.params.user +
-                        '/' +
-                        this.data_folder +
-                        '/' +
-                        this.$route.params.id +
-                        '/' +
-                        this.data_key,
-                    text: this.data_text,
+            if (!this.calc) {
+                if (this.data_folder && this.data_key) {
+                    const val = {
+                        folder:
+                            'data/' +
+                            this.$route.params.user +
+                            '/' +
+                            this.data_folder +
+                            '/' +
+                            this.$route.params.id +
+                            '/' +
+                            this.data_key,
+                        text: this.data_text,
+                    }
+
+                    try {
+                        const success = await this.$store.dispatch(
+                            'createValueSetGlobal',
+                            val
+                        )
+
+                        if (success)
+                            this.$store.dispatch('notic', 'Изменения сохранены')
+
+                        this.close_modal()
+
+                        // this.$router.push('/')
+                    } catch (e) {
+                        console.log(e)
+                    }
                 }
+            } else {
+                const key = this.data_key.split('/')[0]
+                const name = this.data_key.split('/')[1]
 
-                try {
-                    await this.$store.dispatch('createValueSet', val)
+                if (key && name) this.sd[key][name] = this.data_text
+                if (key && !name) this.catalog[key] = this.data_text
 
-                    this.$store.dispatch('notic', 'Изменения сохранены')
+                this.$store.dispatch('notic', 'Изменения сохранены')
 
-                    this.close_modal()
-
-                    // this.$router.push('/')
-                } catch (e) {
-                    console.log(e)
-                }
+                this.close_modal()
             }
         },
 
@@ -336,60 +360,206 @@ export default {
         },
 
         async sd_item_remove(id) {
-            const folder =
-                'data/' +
-                this.$route.params.user +
-                '/sd/' +
-                this.$route.params.id +
-                '/' +
-                id
+            if (!this.calc) {
+                const folder =
+                    'data/' +
+                    this.$route.params.user +
+                    '/sd/' +
+                    this.$route.params.id +
+                    '/' +
+                    id
 
-            try {
-                await this.$store.dispatch('removeFolder', folder)
+                try {
+                    await this.$store.dispatch('removeFolder', folder)
 
-                this.$store.dispatch('notic', 'Данные удалены')
-
-                this.close_modal()
-
-                // this.$router.push('/')
-            } catch (e) {
-                console.log(e)
-            }
-        },
-
-        async sd_remove() {
-            const folder_sd =
-                'data/' +
-                this.$route.params.user +
-                '/sd/' +
-                this.$route.params.id
-
-            const folder_catalog =
-                'data/' +
-                this.$route.params.user +
-                '/catalog/' +
-                this.$route.params.id
-
-            try {
-                const sd_sucses = await this.$store.dispatch(
-                    'removeFolder',
-                    folder_sd
-                )
-
-                const catalog_sucses = await this.$store.dispatch(
-                    'removeFolder',
-                    folder_catalog
-                )
-
-                if (sd_sucses && catalog_sucses) {
                     this.$store.dispatch('notic', 'Данные удалены')
 
                     this.close_modal()
 
-                    this.$router.push('/')
+                    // this.$router.push('/')
+                } catch (e) {
+                    console.log(e)
                 }
-            } catch (e) {
-                console.log(e)
+            } else {
+                this.sd.splice(id, 1)
+            }
+        },
+
+        async sd_remove() {
+            if (!this.calc) {
+                const folder_sd =
+                    'data/' +
+                    this.$route.params.user +
+                    '/sd/' +
+                    this.$route.params.id
+
+                const folder_catalog =
+                    'data/' +
+                    this.$route.params.user +
+                    '/catalog/' +
+                    this.$route.params.id
+
+                try {
+                    const sd_sucses = await this.$store.dispatch(
+                        'removeFolder',
+                        folder_sd
+                    )
+
+                    const catalog_sucses = await this.$store.dispatch(
+                        'removeFolder',
+                        folder_catalog
+                    )
+
+                    if (sd_sucses && catalog_sucses) {
+                        this.$store.dispatch('notic', 'Данные удалены')
+
+                        this.close_modal()
+
+                        this.$router.push('/')
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+            } else {
+                if (!this.bd_id) this.sd.splice(0, this.sd.length)
+                else {
+                    const folder_sd =
+                        'data/' + this.BD_UID + '/sd/' + this.bd_id
+
+                    const folder_catalog =
+                        'data/' + this.BD_UID + '/catalog/' + this.bd_id
+
+                    try {
+                        const sd_sucses = await this.$store.dispatch(
+                            'removeFolder',
+                            folder_sd
+                        )
+
+                        const catalog_sucses = await this.$store.dispatch(
+                            'removeFolder',
+                            folder_catalog
+                        )
+
+                        if (sd_sucses && catalog_sucses) {
+                            this.$store.dispatch('notic', 'Данные удалены')
+
+                            this.close_modal()
+
+                            this.$router.push('/')
+                        }
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }
+            }
+        },
+        async save_bd() {
+            if (!this.catalog.adres)
+                return this.$store.dispatch('notic', 'Введите адрес')
+            if (this.catalog && this.sd) {
+                this.catalog.key = this.catalog.adres
+                    .replace(/[^a-zа-яё0-9 ]/gi, '_')
+                    .replace(/ /g, '_')
+                    .trim()
+
+                this.catalog.data = this.catalog_date
+                this.catalog.spec = this.catalog_spec
+
+                let catalog = {
+                    folder: 'catalog',
+                    text: this.catalog,
+                }
+
+                let sd = {
+                    folder: '',
+                    text: this.sd,
+                }
+
+                // Если нет id сохраняется новый расчет
+                if (!this.bd_id && this.calc) {
+                    try {
+                        const id = await this.$store.dispatch(
+                            'createDataPush',
+                            catalog
+                        )
+
+                        if (id) {
+                            this.bd_id = id
+                            sd.folder = 'sd/' + id
+
+                            const success = await this.$store.dispatch(
+                                'createDataSet',
+                                sd
+                            )
+
+                            if (success)
+                                this.$store.dispatch('notic', 'Расчет сохранен')
+
+                            this.close_modal()
+                        }
+
+                        // this.$router.push('/')
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }
+                // если есть id изменяется существующий расчет
+                if (this.bd_id && this.calc) {
+                    catalog.folder = 'catalog/' + this.bd_id
+
+                    try {
+                        const id = await this.$store.dispatch(
+                            'createDataSet',
+                            catalog
+                        )
+
+                        sd.folder = 'sd/' + this.bd_id
+
+                        const success = await this.$store.dispatch(
+                            'createDataSet',
+                            sd
+                        )
+
+                        if (id && success)
+                            this.$store.dispatch('notic', 'Изменения сохранены')
+
+                        this.close_modal()
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }
+
+                // Сохранение всех изменений сохраненного заказа глобально
+
+                if (this.bd_id && this.$route.params.user) {
+                    catalog.folder =
+                        'data/' +
+                        this.$route.params.user +
+                        '/catalog/' +
+                        this.bd_id
+
+                    sd.folder =
+                        'data/' + this.$route.params.user + '/sd/' + this.bd_id
+
+                    try {
+                        const id = await this.$store.dispatch(
+                            'createValueSetGlobal',
+                            catalog
+                        )
+
+                        const success = await this.$store.dispatch(
+                            'createValueSetGlobal',
+                            sd
+                        )
+
+                        if (id && success)
+                            this.$store.dispatch('notic', 'Изменения сохранены')
+
+                        this.close_modal()
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }
             }
         },
     },
@@ -410,6 +580,11 @@ export default {
 .edit-text {
     height: 1.4em;
     padding: 0 0.2em;
+}
+
+.edit-text.empty {
+    padding-right: 4em;
+    background-color: beige;
 }
 
 .text-border .edit-text {
@@ -433,13 +608,4 @@ export default {
     border: 1px solid #dee2e6;
     padding: 0.5em;
 }
-
-/* .table {
-    width: 100%;
-    margin-bottom: 1rem;
-    vertical-align: top;
-    border-color: #dee2e6;
-    background-color: #fff;
-    border-collapse: collapse;
-} */
 </style>

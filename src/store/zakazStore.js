@@ -34,14 +34,24 @@ export const zakazStore = {
             }))
         },
 
-        BD_USER_ITEM(state) {
-            // const uid = await dispatch('getUid')
-
+        BD_USER(state) {
             return state.user[state.uid]
-            // return Object.keys(state.user[uid]).map((key) => ({
-            //     ...state.user[uid][key],
-            //     id: key,
-            // }))
+        },
+
+        BD_USER_PRISE(state) {
+            return state.user[state.uid]?.prise
+        },
+
+        BD_PRISE_TABS(state, getters) {
+            return getters.BD_USER?.prise?.tabs
+        },
+
+        BD_PRISE_CATALOG(state, getters) {
+            return getters.BD_USER?.prise?.catalog
+        },
+
+        BD_PRISE_MATERIAL(state, getters) {
+            return getters.BD_USER?.prise?.material
         },
 
         BD_DATA_ALL(state) {
@@ -182,6 +192,13 @@ export const zakazStore = {
         },
     },
     actions: {
+        // ID_MAP({ dispatch }, arr) {
+        //     return Object.keys(arr).map((key) => ({
+        //         ...arr[key],
+        //         id: key,
+        //     }))
+        // },
+
         async USER_ALL_BUILD({ commit }) {
             const uid = await getAuth().currentUser.uid
             commit('UID_CHANGE', uid)

@@ -7,7 +7,7 @@
         </Container>
 
         <div class="fixed-btn">
-            <router-link class="fixed-btn__btn btn-icon" to="/zakaz">
+            <router-link class="fixed-btn__btn btn-icon" to="/calc">
                 <i class="large material-icons">add</i>
             </router-link>
         </div>

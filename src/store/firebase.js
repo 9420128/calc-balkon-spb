@@ -54,11 +54,56 @@ export default {
         /// отправить данные на сервер
         /// val.folder - папака,  val.text - значение
 
+        async createValueSetGlobal({ commit }, val) {
+            try {
+                // const uid = await dispatch('getUid')
+                const db = getDatabase()
+                await set(ref(db, val.folder), val.text)
+
+                return true
+            } catch (e) {
+                commit('setError', e)
+                throw e
+            }
+        },
+
         async createValueSet({ commit, dispatch }, val) {
             try {
                 const uid = await dispatch('getUid')
                 const db = getDatabase()
                 await set(ref(db, `users/${uid}/${val.folder}`), val.text)
+
+                return true
+            } catch (e) {
+                commit('setError', e)
+                throw e
+            }
+        },
+
+        async createDataPush({ commit, dispatch }, val) {
+            try {
+                const uid = await dispatch('getUid')
+                const db = getDatabase()
+                const data = await push(
+                    ref(db, `data/${uid}/${val.folder}`),
+                    val.text
+                )
+
+                return data.key
+            } catch (e) {
+                commit('setError', e)
+                throw e
+            }
+        },
+
+        async createDataSet({ commit, dispatch }, val) {
+            try {
+                const uid = await dispatch('getUid')
+                const db = getDatabase()
+                const data = await set(
+                    ref(db, `data/${uid}/${val.folder}`),
+                    val.text
+                )
 
                 return true
             } catch (e) {
@@ -82,115 +127,115 @@ export default {
 
         // sklad
 
-        async createSkladPush(
-            { commit, dispatch },
-            { folder, adres, info, name, email, menedger }
-        ) {
-            try {
-                const uid = await dispatch('getUid')
-                const db = getDatabase()
-                await push(ref(db, `users/${uid}/${folder}`), {
-                    adres,
-                    info,
-                    name,
-                    email,
-                    menedger,
-                })
+        // async createSkladPush(
+        //     { commit, dispatch },
+        //     { folder, adres, info, name, email, menedger }
+        // ) {
+        //     try {
+        //         const uid = await dispatch('getUid')
+        //         const db = getDatabase()
+        //         await push(ref(db, `users/${uid}/${folder}`), {
+        //             adres,
+        //             info,
+        //             name,
+        //             email,
+        //             menedger,
+        //         })
 
-                return true
-            } catch (e) {
-                commit('setError', e)
-                throw e
-            }
-        },
+        //         return true
+        //     } catch (e) {
+        //         commit('setError', e)
+        //         throw e
+        //     }
+        // },
 
-        async createSkladSet(
-            { commit, dispatch },
-            { folder, adres, info, name, email, menedger }
-        ) {
-            try {
-                const uid = await dispatch('getUid')
-                const db = getDatabase()
-                await set(ref(db, `users/${uid}/${folder}`), {
-                    adres,
-                    info,
-                    name,
-                    email,
-                    menedger,
-                })
+        // async createSkladSet(
+        //     { commit, dispatch },
+        //     { folder, adres, info, name, email, menedger }
+        // ) {
+        //     try {
+        //         const uid = await dispatch('getUid')
+        //         const db = getDatabase()
+        //         await set(ref(db, `users/${uid}/${folder}`), {
+        //             adres,
+        //             info,
+        //             name,
+        //             email,
+        //             menedger,
+        //         })
 
-                return true
-            } catch (e) {
-                commit('setError', e)
-                throw e
-            }
-        },
+        //         return true
+        //     } catch (e) {
+        //         commit('setError', e)
+        //         throw e
+        //     }
+        // },
 
         // Site
-        async createSitePush(
-            { commit, dispatch },
-            { folder, adres, info, name, email_user, email_zavod, btn }
-        ) {
-            try {
-                const uid = await dispatch('getUid')
-                const db = getDatabase()
-                await push(ref(db, `users/${uid}/${folder}`), {
-                    adres,
-                    info,
-                    name,
-                    email_user,
-                    email_zavod,
-                    btn,
-                })
+        // async createSitePush(
+        //     { commit, dispatch },
+        //     { folder, adres, info, name, email_user, email_zavod, btn }
+        // ) {
+        //     try {
+        //         const uid = await dispatch('getUid')
+        //         const db = getDatabase()
+        //         await push(ref(db, `users/${uid}/${folder}`), {
+        //             adres,
+        //             info,
+        //             name,
+        //             email_user,
+        //             email_zavod,
+        //             btn,
+        //         })
 
-                return true
-            } catch (e) {
-                commit('setError', e)
-                throw e
-            }
-        },
+        //         return true
+        //     } catch (e) {
+        //         commit('setError', e)
+        //         throw e
+        //     }
+        // },
 
-        async createSiteSet(
-            { commit, dispatch },
-            { folder, adres, info, name, email_user, email_zavod, btn }
-        ) {
-            try {
-                const uid = await dispatch('getUid')
-                const db = getDatabase()
-                await set(ref(db, `users/${uid}/${folder}`), {
-                    adres,
-                    info,
-                    name,
-                    email_user,
-                    email_zavod,
-                    btn,
-                })
+        // async createSiteSet(
+        //     { commit, dispatch },
+        //     { folder, adres, info, name, email_user, email_zavod, btn }
+        // ) {
+        //     try {
+        //         const uid = await dispatch('getUid')
+        //         const db = getDatabase()
+        //         await set(ref(db, `users/${uid}/${folder}`), {
+        //             adres,
+        //             info,
+        //             name,
+        //             email_user,
+        //             email_zavod,
+        //             btn,
+        //         })
 
-                return true
-            } catch (e) {
-                commit('setError', e)
-                throw e
-            }
-        },
+        //         return true
+        //     } catch (e) {
+        //         commit('setError', e)
+        //         throw e
+        //     }
+        // },
 
-        // Status
-        // sklad
+        // // Status
+        // // sklad
 
-        async createStatusPush({ commit, dispatch }, { folder, name, mail }) {
-            try {
-                const uid = await dispatch('getUid')
-                const db = getDatabase()
-                await push(ref(db, `users/${uid}/${folder}`), {
-                    name,
-                    mail,
-                })
+        // async createStatusPush({ commit, dispatch }, { folder, name, mail }) {
+        //     try {
+        //         const uid = await dispatch('getUid')
+        //         const db = getDatabase()
+        //         await push(ref(db, `users/${uid}/${folder}`), {
+        //             name,
+        //             mail,
+        //         })
 
-                return true
-            } catch (e) {
-                commit('setError', e)
-                throw e
-            }
-        },
+        //         return true
+        //     } catch (e) {
+        //         commit('setError', e)
+        //         throw e
+        //     }
+        // },
 
         // Получить данные с сеhвера
 

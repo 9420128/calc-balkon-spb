@@ -3,7 +3,11 @@
     <div class="home" v-else>
         <h1>Заказы</h1>
         <div class="overlow m-top">
-            <TableMy v-for="user in BD_USER_ALL" :key="user.id" class="table-hover">
+            <TableMy
+                v-for="user in BD_USER_ALL"
+                :key="user.id"
+                class="table-hover"
+            >
                 <tr>
                     <th>{{ user.name }}</th>
                     <th width="100px">Дата</th>
@@ -14,7 +18,7 @@
                 >
                     <td>
                         <router-link :to="'/edit/' + user.id + '/' + i">{{
-                            zakaz.key
+                            zakaz.adres
                         }}</router-link>
                     </td>
                     <td>{{ zakaz.data }}</td>

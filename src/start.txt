@@ -69,7 +69,8 @@ isNaN(el)
 
 Math.floor(el) // округление
 
-el.toFixed(2)
++el.toFixed(2)
+
 
 e.target.classList.add
                   .contains  // проверка наличия класса
@@ -119,7 +120,7 @@ str.split('-') // разбирает строку в массив
 str.join(' ') // убирает символы межу словами
 
 str.replace(/ /g, '_') // замена пробела символом
-str.replace(/[^a-zа-яё0-9 ]/gi, '_').trim()
+str.replace(/[^a-zа-яё0-9 ]/gi, '_').trim() // замена всех символов кроме букв и цифр
 
 получить ключи объекта или массива
 var obj = { 0: 'a', 1: 'b', 2: 'c' };
