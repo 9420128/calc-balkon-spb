@@ -72,6 +72,10 @@
                 />
             </div>
         </Grid>
+        <modal-min v-show="modal_min" @close_modal_min="close_modal_min">
+           <p v-html="modal_min_text"></p>
+            <switches on="Добавить новую" off="Соеденить"/>
+        </modal-min>
     </div>
 </template>
 
@@ -86,9 +90,11 @@ import Icon from '../components/html/Icon.vue'
 import InputIcon from '../components/html/InputIcon.vue'
 import Sel from '../components/html/Sel.vue'
 import Switches from '../components/html/Switches.vue'
+import ModalMin from "@/components/app/ModalMin";
 export default {
     name: 'Calc',
     components: {
+        ModalMin,
         Grid,
         Card,
         Tabs,
@@ -107,6 +113,8 @@ export default {
         flag_w: true,
         flag_h: true,
         flag_save: false,
+        modal_min: false,
+        modal_min_text:'',
         material: {
             _sum: 0,
             _i: '',
@@ -118,11 +126,11 @@ export default {
         sd_text: '',
         sd_option: '',
         catalog: {
-            adres: '',
+            // adres: '',
             data: '',
             isp: '',
             key: '',
-            montag: '',
+            // montag: '',
             prim: '',
             spec: '',
             user: '',
@@ -289,6 +297,10 @@ export default {
         },
     },
     methods: {
+        close_modal_min() {
+            this.modal_min = false
+        },
+
         id_map(arr) {
             if (arr) {
                 const array = Object.keys(arr).map((key) => ({
@@ -334,6 +346,16 @@ export default {
             sd.option = this.sd_option
             sd.text = this.sd_text
 
+            const sd_length = this.sd.length
+            if(sd_length) {
+                const sd_item = this.sd[sd_length-1]
+
+                if(sd_item.text === sd.text && sd_item.option === sd.option) {
+                    this.modal_min_text = `Таблица уже содержит <b>${sd.text}</b> и <b>${sd.option}</b>.<br>
+           Поместить расчет в имеющую строку или добавить новую?`
+                    this.modal_min = true
+                }
+            }
             this.sd.push(sd)
 
             this.flag_save = true
