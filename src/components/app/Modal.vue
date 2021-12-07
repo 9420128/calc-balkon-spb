@@ -1,7 +1,7 @@
 <template>
     <transition name="modal-fade">
         <div class="modal">
-            <div class="modal__body">
+            <div class="modal__body" :class="{ 'modal__body-min': modal_min }">
                 <header class="modal-header">
                     <h2><slot name="header"></slot></h2>
                     <button type="button" class="btn-close" @click="close">
@@ -32,6 +32,9 @@ import Icon from '../html/Icon.vue'
 export default {
     components: { Icon },
     name: 'modal',
+    props: {
+        modal_min: { type: Boolean, default: () => false },
+    },
     methods: {
         close() {
             this.$emit('close')
@@ -61,6 +64,10 @@ export default {
     width: 1100px;
     max-width: calc(100% - 0.01px) !important;
     background: #fff;
+}
+
+.modal__body.modal__body-min {
+    width: 480px;
 }
 
 @media (min-width: 640px) {

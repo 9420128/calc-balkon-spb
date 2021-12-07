@@ -1,82 +1,97 @@
 <template>
-    <div class="calc">
-        <h1>Калькулятор</h1>
-        <Grid class="m-top">
-            <form @submit.prevent="calc_submit">
-                <Card>
-                    <template v-slot:header>
-                        <Tabs :tabs="id_map(BD_PRISE_TABS)" />
-                    </template>
-                    <Grid>
-                        <div v-if="catalog_filter">
-                            <Sel
-                                label="Вид работ"
-                                :options="catalog_filter"
-                                @change="catalog_change($event.target)"
-                            />
-                            <switches />
-                        </div>
+    <h1>Калькулятор</h1>
+    <div class="calc m-top">
+        <form class="calc__form" @submit.prevent="calc_submit">
+            <Card>
+                <template v-slot:header>
+                    <Tabs :tabs="id_map(BD_PRISE_TABS)" />
+                </template>
+                <Grid class="m-top">
+                    <div v-if="catalog_filter">
+                        <Sel
+                            label="Вид работ"
+                            :options="catalog_filter"
+                            @change="catalog_change($event.target)"
+                        />
+                    </div>
 
-                        <div v-if="material_filter">
-                            <Sel
-                                label="Материал"
-                                :options="material_filter"
-                                :selected="material_filter[0].id"
-                                @change="material_change($event.target)"
-                            />
-                            <input-icon
-                                v-if="material._sum !== false"
-                                label="Стоимость (руб.)"
-                                v-model="material._sum"
-                                id="material_sum"
-                            />
+                    <div v-if="material_filter">
+                        <Sel
+                            label="Материал"
+                            :options="material_filter"
+                            :selected="material_filter[0].id"
+                            @change="material_change($event.target)"
+                        />
+                    </div>
+                </Grid>
+                <Grid>
+                    <div>
+                        <input-icon
+                            v-if="flag_w"
+                            label="Размер w (мм.)"
+                            v-model.number="calc_w"
+                            @click="$event.target.select()"
+                        />
+                    </div>
+                    <div>
+                        <input-icon
+                            v-if="flag_h"
+                            label="Размер h (мм.)"
+                            v-model.number="calc_h"
+                            @click="$event.target.select()"
+                        />
+                    </div>
+                </Grid>
+                <template v-slot:footer>
+                    <div class="flex gap-2">
+                        <div class="calc__info">
+                            S: {{ calc_i_tofixed }} {{ material._i }}
                         </div>
-                    </Grid>
-                    <Grid>
-                        <div>
-                            <input-icon
-                                v-if="flag_w"
-                                label="Размер w (мм.)"
-                                v-model.number="calc_w"
-                                @click="$event.target.select()"
-                            />
-                        </div>
-                        <div>
-                            <input-icon
-                                v-if="flag_h"
-                                label="Размер h (мм.)"
-                                v-model.number="calc_h"
-                                @click="$event.target.select()"
-                            />
-                        </div>
-                    </Grid>
-                    <template v-slot:footer>
-                        <div class="flex gap-2">
-                            <div>S: {{ calc_i_tofixed }} {{ material._i }}</div>
-                            <div>₽: {{ calc_s }}</div>
-                        </div>
-                        <div>
-                            <btn class="button-icon btn-danger"
-                                ><icon icon="forward"
-                            /></btn>
-                        </div>
-                    </template>
-                </Card>
-            </form>
-            <div>
-                <EditTable
-                    v-if="sd_build.length"
-                    :sd="sd_build"
-                    :catalog="catalog_build"
-                    :flag_save="flag_save"
-                />
-            </div>
-        </Grid>
-        <modal-min v-show="modal_min" @close_modal_min="close_modal_min">
-           <p v-html="modal_min_text"></p>
-            <switches on="Добавить новую" off="Соеденить"/>
-        </modal-min>
+                        <div class="calc__info">₽: {{ calc_s }}</div>
+                        <input-icon
+                            style="padding-right: 2em"
+                            title="Стоимость материала"
+                            v-if="material._sum !== false"
+                            v-model="material._sum"
+                            id="material_sum"
+                            wrapClass="nowrap"
+                        />
+                    </div>
+                    <div>
+                        <btn class="button-icon btn-danger"
+                            ><icon icon="forward"
+                        /></btn>
+                    </div>
+                </template>
+            </Card>
+        </form>
+        <div>
+            <EditTable
+                v-if="sd_build.length"
+                :sd="sd_build"
+                :catalog="catalog_build"
+                :flag_save="flag_save"
+            />
+        </div>
     </div>
+    <form @submit.prevent="modal_grup_submit">
+        <Modal v-show="modal_min" @close="close_modal_min" :modal_min="true">
+            <template v-slot:header>
+                <icon icon="notifications_active" /> Настройки
+            </template>
+            <template v-slot:body>
+                <p v-html="modal_min_text"></p>
+                <switches
+                    @change="modal_default_submit($event.target)"
+                    on="Добавить новую"
+                    off="Соеденить"
+                />
+            </template>
+            <template v-slot:footer>
+                <btn class="btn-prim">Ок</btn>
+            </template>
+        </Modal>
+    </form>
 </template>
 
 <script>
@@ -90,11 +105,10 @@ import Icon from '../components/html/Icon.vue'
 import InputIcon from '../components/html/InputIcon.vue'
 import Sel from '../components/html/Sel.vue'
 import Switches from '../components/html/Switches.vue'
-import ModalMin from "@/components/app/ModalMin";
+import Modal from '../components/app/Modal.vue'
 export default {
     name: 'Calc',
     components: {
-        ModalMin,
         Grid,
         Card,
         Tabs,
@@ -104,6 +118,7 @@ export default {
         Btn,
         Icon,
         EditTable,
+        Modal,
     },
     data: () => ({
         catalog_id: '',
@@ -114,7 +129,7 @@ export default {
         flag_h: true,
         flag_save: false,
         modal_min: false,
-        modal_min_text:'',
+        modal_min_text: '',
         material: {
             _sum: 0,
             _i: '',
@@ -297,6 +312,60 @@ export default {
         },
     },
     methods: {
+        modal_default_submit(event) {
+            if (event.checked) {
+                let sd = this.sd_arr_build()
+                sd.flag = true
+                this.sd.push(sd)
+
+                this.close_modal_min()
+
+                event.checked = false
+
+                this.flag_save = true // показать кнопку сохранить
+                return this.notic('Расчет добавлен')
+            } else return this.notic('Ошибка! Расчет не добавлен')
+        },
+
+        modal_grup_submit() {
+            let sd = this.sd_arr_build()
+
+            let index = ''
+
+            for (let i in this.sd) {
+                const el = this.sd[i]
+
+                if (el.option === sd.option && el.text === sd.text) {
+                    index = i
+                    break
+                }
+            }
+
+            if (index) {
+                console.log(this.sd[index].s)
+                console.log(this.sd[index].p)
+                this.sd[index].s += +sd.s
+                this.sd[index].p += +sd.p
+                this.sd[index].flag = true
+
+                this.flag_save = true // показать кнопку сохранить
+                this.close_modal_min()
+
+                return this.notic('Расчет добавлен')
+            } else return this.notic('Ошибка! Расчет не добавлен')
+        },
+
+        sd_arr_build() {
+            let sd = {}
+            sd.s = +this.calc_i_tofixed // Площадь
+            sd.i = this.material._i // Ед.Изм
+            sd.p = this.calc_s // Сумма
+            sd.option = this.sd_option
+            sd.text = this.sd_text
+
+            return sd
+        },
+
         close_modal_min() {
             this.modal_min = false
         },
@@ -339,26 +408,29 @@ export default {
         calc_submit() {
             if (!this.calc_s) return this.notic('Отмена! Стоимость равна нулю')
 
-            let sd = {}
-            sd.s = +this.calc_i_tofixed // Площадь
-            sd.i = this.material._i // Ед.Изм
-            sd.p = this.calc_s // Сумма
-            sd.option = this.sd_option
-            sd.text = this.sd_text
+            if (this.sd.length) {
+                const grup_i = this.sd.filter((el) => {
+                    if (
+                        el.text === this.sd_text &&
+                        el.option === this.sd_option
+                    )
+                        return true
+                })
 
-            const sd_length = this.sd.length
-            if(sd_length) {
-                const sd_item = this.sd[sd_length-1]
-
-                if(sd_item.text === sd.text && sd_item.option === sd.option) {
-                    this.modal_min_text = `Таблица уже содержит <b>${sd.text}</b> и <b>${sd.option}</b>.<br>
-           Поместить расчет в имеющую строку или добавить новую?`
+                if (grup_i.length) {
+                    this.modal_min_text = `Таблица уже содержит <b>${this.sd_text}</b> и <b>${this.sd_option}</b>.<br>Поместить расчет в имеющую строку или добавить новую?`
                     this.modal_min = true
+                    return
                 }
             }
+
+            let sd = this.sd_arr_build()
+
+            sd.flag = true
+
             this.sd.push(sd)
 
-            this.flag_save = true
+            this.flag_save = true // показать кнопку сохранить
         },
 
         notic(text) {
@@ -369,12 +441,32 @@ export default {
 </script>
 <style lang="sass">
 .calc
+    display: flex
+    flex-wrap: nowrap
+    gap: 3rem
+
+    >*
+        box-sizing: border-box
+        width: 100%
+        max-width: 100%
+
+    &__form
+        max-width: 530px
+        width: 100%
+
+    &__info
+        white-space: nowrap
+
     .tab
         height: 74px
         margin-bottom: 0
 
         > * > a
             line-height: 50px
-    // padding-top: 2em
-    // padding-bottom: 2em
+.wrap.nowrap
+    margin-bottom: 0
+
+@media (max-width: 1200px)
+    .calc
+        flex-wrap: wrap
 </style>

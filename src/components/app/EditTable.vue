@@ -46,7 +46,11 @@
                         </tr>
                     </thead>
                     <tbody v-if="sd">
-                        <tr v-for="(item, i) in filter_sd(sd)" :key="item.id">
+                        <tr
+                            v-for="(item, i) in filter_sd(sd)"
+                            :key="item.id"
+                            :class="{ 'tr-bg': item?.flag }"
+                        >
                             <td nowrap>
                                 {{ i + 1 }}
                             </td>
@@ -302,10 +306,20 @@ export default {
         },
 
         async submit_modal() {
+            const key = this.data_key.split('/')[0]
+            const name = this.data_key.split('/')[1]
+
+            if (key && name) this.sd[key][name] = this.data_text
+
             if (!this.calc) {
-                if (this.data_folder && this.data_key) {
-                    const val = {
-                        folder:
+                if (this.data_folder) {
+                    let val = {
+                        folder: '',
+                        text: '',
+                    }
+
+                    if (!name) {
+                        val.folder =
                             'data/' +
                             this.$route.params.user +
                             '/' +
@@ -313,8 +327,23 @@ export default {
                             '/' +
                             this.$route.params.id +
                             '/' +
-                            this.data_key,
-                        text: this.data_text,
+                            this.data_key
+
+                        val.text = this.data_text
+                    } else {
+                        val.folder =
+                            'data/' +
+                            this.$route.params.user +
+                            '/' +
+                            this.data_folder +
+                            '/' +
+                            this.$route.params.id +
+                            '/' +
+                            key
+
+                        val.text = this.sd[key]
+
+                        if (val.text.flag) delete val.text.flag
                     }
 
                     try {
@@ -323,8 +352,7 @@ export default {
                             val
                         )
 
-                        if (success)
-                            this.$store.dispatch('notic', 'Изменения сохранены')
+                        if (success) this.notic('Изменения сохранены')
 
                         this.close_modal()
 
@@ -334,13 +362,9 @@ export default {
                     }
                 }
             } else {
-                const key = this.data_key.split('/')[0]
-                const name = this.data_key.split('/')[1]
-
-                if (key && name) this.sd[key][name] = this.data_text
                 if (key && !name) this.catalog[key] = this.data_text
 
-                this.$store.dispatch('notic', 'Изменения сохранены')
+                this.notic('Изменения сохранены')
 
                 this.close_modal()
             }
@@ -372,7 +396,7 @@ export default {
                 try {
                     await this.$store.dispatch('removeFolder', folder)
 
-                    this.$store.dispatch('notic', 'Данные удалены')
+                    this.notic('Данные удалены')
 
                     this.close_modal()
 
@@ -411,7 +435,7 @@ export default {
                     )
 
                     if (sd_sucses && catalog_sucses) {
-                        this.$store.dispatch('notic', 'Данные удалены')
+                        this.notic('Данные удалены')
 
                         this.close_modal()
 
@@ -441,7 +465,7 @@ export default {
                         )
 
                         if (sd_sucses && catalog_sucses) {
-                            this.$store.dispatch('notic', 'Данные удалены')
+                            this.notic('Данные удалены')
 
                             this.close_modal()
 
@@ -454,9 +478,8 @@ export default {
             }
         },
         async save_bd() {
-            if (!this.catalog.adres)
-                return this.$store.dispatch('notic', 'Введите адрес')
-            if (this.catalog && this.sd) {
+            if (!this.catalog.adres) return this.notic('Введите адрес')
+            if (this.catalog && this.sd.length) {
                 this.catalog.key = this.catalog.adres
                     .replace(/[^a-zа-яё0-9 ]/gi, '_')
                     .replace(/ /g, '_')
@@ -469,6 +492,12 @@ export default {
                     folder: 'catalog',
                     text: this.catalog,
                 }
+
+                this.sd.forEach((el) => {
+                    if (el.flag) {
+                        delete el.flag
+                    }
+                })
 
                 let sd = {
                     folder: '',
@@ -492,8 +521,7 @@ export default {
                                 sd
                             )
 
-                            if (success)
-                                this.$store.dispatch('notic', 'Расчет сохранен')
+                            if (success) this.notic('Расчет сохранен')
 
                             this.close_modal()
                         }
@@ -520,8 +548,7 @@ export default {
                             sd
                         )
 
-                        if (id && success)
-                            this.$store.dispatch('notic', 'Изменения сохранены')
+                        if (id && success) this.notic('Изменения сохранены')
 
                         this.close_modal()
                     } catch (e) {
@@ -552,8 +579,7 @@ export default {
                             sd
                         )
 
-                        if (id && success)
-                            this.$store.dispatch('notic', 'Изменения сохранены')
+                        if (id && success) this.notic('Изменения сохранены')
 
                         this.close_modal()
                     } catch (e) {
@@ -561,6 +587,9 @@ export default {
                     }
                 }
             }
+        },
+        notic(text) {
+            return this.$store.dispatch('notic', text)
         },
     },
 }
@@ -607,5 +636,9 @@ export default {
     margin: 2em 0;
     border: 1px solid #dee2e6;
     padding: 0.5em;
+}
+
+.tr-bg {
+    background-color: #f5f5f5;
 }
 </style>

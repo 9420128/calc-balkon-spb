@@ -22,7 +22,7 @@
 }
 .card-body {
     display: flow-root;
-    padding: 30px;
+    padding: 0 30px;
 }
 
 .card-body h3 {
@@ -47,6 +47,11 @@
 @media only screen and (max-width: 992px) {
     .card {
         margin-bottom: 2rem;
+    }
+
+    .card-body,
+    .card-footer {
+        padding: 0 20px;
     }
 }
 </style>

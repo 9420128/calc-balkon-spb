@@ -20,6 +20,10 @@
     width: 100%;
 }
 
+/* .grid > * > :last-child {
+    margin-bottom: 0;
+} */
+
 @media (min-width: 640px) {
     .grid > * {
         flex: 1;
