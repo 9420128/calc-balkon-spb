@@ -109,7 +109,7 @@
                     <span>{{
                         new Intl.NumberFormat('ru-RU').format(summ)
                     }}</span>
-                    рублей
+                    р.
                 </h3>
                 <div class="wrap">
                     <p class="edit_prim">
@@ -368,6 +368,7 @@ export default {
 
                 this.close_modal()
             }
+            if(key === 'adres') return this.save_bd()
         },
 
         show_modal() {
@@ -487,6 +488,7 @@ export default {
 
                 this.catalog.data = this.catalog_date
                 this.catalog.spec = this.catalog_spec
+                this.catalog.date = Date.now()
 
                 let catalog = {
                     folder: 'catalog',

@@ -140,6 +140,31 @@ length
 Установка пробеле после тысячи -> 1 2366 р
 const summ = new Intl.NumberFormat('ru-RU').format(val) + 'р.'
 
+Фильтер по дате
+date_filter(obj){
+    let aray = Object.keys(obj).map((key) => ({
+        ...obj[key],
+        id: key,
+    }))
+
+    const date_sort = aray.reduce((result, item) => {
+        return result.includes(item.date)
+            ? result
+            : [...result, item.date]
+    }, [])
+
+    date_sort.sort((a, b) => b - a)
+
+    let arr = []
+
+    date_sort.forEach((el) => {
+        for (let i in aray) {
+            if (el === aray[i].date) arr.push(aray[i])
+        }
+    })
+    return arr
+}
+
 
 .......................  vue ........................
 

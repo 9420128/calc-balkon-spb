@@ -31,6 +31,7 @@
                             label="Размер w (мм.)"
                             v-model.number="calc_w"
                             @click="$event.target.select()"
+                            type="tel"
                         />
                     </div>
                     <div>
@@ -39,6 +40,7 @@
                             label="Размер h (мм.)"
                             v-model.number="calc_h"
                             @click="$event.target.select()"
+                            type="tel"
                         />
                     </div>
                 </Grid>
@@ -55,6 +57,7 @@
                             v-model="material._sum"
                             id="material_sum"
                             wrapClass="nowrap"
+                            type="tel"
                         />
                     </div>
                     <div>

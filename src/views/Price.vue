@@ -2,9 +2,41 @@
     <Loader v-if="loader" />
     <div class="price">
         <h1>Прайс</h1>
+
+        <div class="flex between  m-top-2">
+            <div class="btn-grup" v-if="flag_btn">
+                <Btn class="btn-prim" @click="btn_tabs_click"
+                >Услуга <icon icon="add"
+                /></Btn>
+
+                <!-- v-if="flag_catalog" -->
+                <Btn class="btn-prim" @click="btn_catalog_click"
+                >Вид работы <icon icon="add"
+                /></Btn>
+                <Btn
+                    v-if="catalog_filter && catalog_filter.length"
+                    class="btn-prim"
+                    @click="btn_material_click"
+                >Материал <icon icon="add"
+                /></Btn>
+                <Btn class="btn-danger" @click="flag_edit = !flag_edit"
+                >Редактировать <icon icon="edit"
+                /></Btn>
+                <print />
+            </div>
+            <div>
+                <btn v-if="flag_btn" class="button-icon btn-danger" @click="flag_btn = !flag_btn">
+                    <icon icon="keyboard_arrow_left" />
+                </btn>
+                <btn v-else class="button-icon btn-danger" @click="flag_btn = !flag_btn">
+                    <icon icon="keyboard_arrow_right" />
+                </btn>
+            </div>
+        </div>
+
         <Tabs :tabs="id_map(BD_PRISE_TABS)" class="m-top" />
 
-        <div v-if="flag_edit">
+        <div class="overlow" v-if="flag_edit">
             <table class="table table-divider">
                 <thead>
                     <tr>
@@ -25,7 +57,7 @@
             </table>
         </div>
 
-        <div class="m-top">
+        <div class="m-top overlow">
             <TableMy id="print">
                 <thead>
                     <tr>
@@ -73,26 +105,7 @@
                     </tr>
                 </tbody>
             </TableMy>
-            <div class="btn-grup m-top-2">
-                <Btn class="btn-prim" @click="btn_tabs_click"
-                    >Услуга <icon icon="add"
-                /></Btn>
 
-                <!-- v-if="flag_catalog" -->
-                <Btn class="btn-prim" @click="btn_catalog_click"
-                    >Вид работы <icon icon="add"
-                /></Btn>
-                <Btn
-                    v-if="catalog_filter && catalog_filter.length"
-                    class="btn-prim"
-                    @click="btn_material_click"
-                    >Материал <icon icon="add"
-                /></Btn>
-                <Btn class="btn-danger" @click="flag_edit = !flag_edit"
-                    >Редактировать <icon icon="edit"
-                /></Btn>
-                <print />
-            </div>
         </div>
     </div>
 
@@ -254,6 +267,7 @@ export default {
         flag_edit: false,
         flag_remove: true,
         flag_remove_click: true,
+        flag_btn: true,
         material_sum: '',
         material_i: '',
         material_f: '',

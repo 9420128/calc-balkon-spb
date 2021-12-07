@@ -13,12 +13,12 @@
                     <th width="100px">Дата</th>
                 </tr>
                 <tr
-                    v-for="(zakaz, i) in BD_DATA_ALL[user.id].catalog"
+                    v-for="(zakaz, i) in date_filter(BD_DATA_ALL[user.id].catalog)"
                     :key="zakaz.id"
                 >
                     <td>
-                        <router-link :to="'/edit/' + user.id + '/' + i">{{
-                            zakaz.adres
+                        <router-link :to="'/edit/' + user.id + '/' + zakaz.id">{{
+                            zakaz.adres ? zakaz.adres : zakaz.id
                         }}</router-link>
                     </td>
                     <td>{{ zakaz.data }}</td>
@@ -43,6 +43,38 @@ export default {
     data: () => ({}),
     mounted() {
         // console.log(this.BD_DATA_ALL)
+    },
+    methods:{
+        date_filter(obj){
+            let aray = Object.keys(obj).map((key) => ({
+                ...obj[key],
+                id: key,
+            }))
+
+            let date_sort = aray.reduce((result, item) => {
+                return result.includes(item.date)
+                    ? result
+                    : [...result, item.date]
+            }, [])
+
+            date_sort.sort((a, b) => b - a)
+
+            let arr = []
+
+            date_sort.forEach((el) => {
+                if(el) {
+                    for (let i in aray) {
+                        if (el === aray[i].date) arr.push(aray[i])
+                    }
+                }
+            })
+
+            aray = aray.filter(el => !el.date )
+
+            aray.forEach(el => arr.push(el))
+
+            return arr
+        }
     },
 }
 </script>

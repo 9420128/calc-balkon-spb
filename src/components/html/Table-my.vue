@@ -16,6 +16,7 @@ export default {
     border-spacing: 0
     width: 100%
     margin-bottom: 20px
+    min-width: 500px
 
     th
         padding: 16px 12px
