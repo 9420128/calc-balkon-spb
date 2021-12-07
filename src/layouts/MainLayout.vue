@@ -25,12 +25,12 @@ export default {
     components: { Header, Container },
 
     mounted() {
-        this.SETTING_BUILD()
+        // this.SETTING_BUILD()
         this.DATA_ALL_BUILD()
         this.USER_ALL_BUILD()
     },
     methods: {
-        ...mapActions(['SETTING_BUILD']),
+        // ...mapActions(['SETTING_BUILD']),
         ...mapActions(['DATA_ALL_BUILD']),
         ...mapActions(['USER_ALL_BUILD']),
 

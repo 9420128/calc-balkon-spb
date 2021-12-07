@@ -466,8 +466,6 @@ export default {
 
         > * > a
             line-height: 50px
-.wrap.nowrap
-    margin-bottom: 0
 
 @media (max-width: 1200px)
     .calc

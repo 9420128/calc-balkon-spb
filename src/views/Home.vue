@@ -2,6 +2,20 @@
     <Loader v-if="!BD_USER_ALL" />
     <div class="home" v-else>
         <h1>Заказы</h1>
+        <div class="search m-top">
+            <form @submit.prevent="search_submit">
+                <input-icon icon="search" v-model="search" class="nowrap"/>
+            </form>
+
+                <TableMy v-if="search_build" class="table-search table-hover">
+                    <tr v-for="el in search_build" :key="el.id">
+                        <td> <router-link :to="'/edit/' + el.user_id + '/' + el.id">{{ el.adres ? el.adres : el.id }}</router-link>
+                        </td>
+                        <td width="100px">{{ el.data}}</td>
+                    </tr>
+                </TableMy>
+        </div>
+
         <div class="overlow m-top">
             <TableMy
                 v-for="user in BD_USER_ALL"
@@ -33,18 +47,52 @@ import Loader from '../components/app/Loader.vue'
 /* eslint-disable */
 import { mapGetters, mapActions } from 'vuex'
 import TableMy from '../components/html/Table-my.vue'
+import InputIcon from "@/components/html/InputIcon";
+import {indexOf} from "core-js/internals/array-includes";
 export default {
     name: 'Home',
-    components: { Loader, TableMy },
+    components: {InputIcon, Loader, TableMy },
+    data: () => ({
+        search: '',
+        search_data: []
+    }),
     computed: {
         ...mapGetters(['BD_USER_ALL']),
         ...mapGetters(['BD_DATA_ALL']),
+
+        search_build(){
+            if(this.search.length > 7) return this.search_data
+
+            if(this.search.length > 2){
+                this.search_data = []
+                this.BD_USER_ALL.forEach(el => {
+
+                    const arr = this.date_filter(this.BD_DATA_ALL[el.id].catalog)
+
+                    for(let i in arr){
+                        if(arr[i].adres && arr[i].adres.toLowerCase().indexOf(this.search.toLowerCase()) > -1){
+                            arr[i].user_id = el.id
+                            this.search_data.push(arr[i])
+                        }
+                    }
+
+                })
+                return this.search_data
+            }
+            return false
+        }
     },
-    data: () => ({}),
-    mounted() {
-        // console.log(this.BD_DATA_ALL)
-    },
+
     methods:{
+        search_submit(){
+            if(this.search_data.length){
+
+                const user_id = this.search_data[0].user_id
+                const id = this.search_data[0].id
+
+                return this.$router.push(`/edit/${user_id}/${id}`)
+            }
+        },
         date_filter(obj){
             let aray = Object.keys(obj).map((key) => ({
                 ...obj[key],
@@ -82,4 +130,7 @@ export default {
 .sklad_wrap>p
     margin-bottom: 2px
     min-width: 240px
+
+.table-search
+    background-color: #f2f2f2
 </style>

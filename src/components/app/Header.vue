@@ -2,7 +2,7 @@
     <div class="header">
         <nav class="nav-extended">
             <div class="nav-wrapper container">
-                <router-link to="/" class="brand-logo">Ok_tab</router-link>
+                <router-link to="/" class="brand-logo">calc</router-link>
                 <a href="#" data-target="mobile-demo" class="sidenav-trigger"
                     ><i class="material-icons">menu</i></a
                 >
@@ -94,6 +94,7 @@ nav.nav-extended {
         left: 50%;
         -webkit-transform: translateX(-50%);
         transform: translateX(-50%);
+        font-weight: bold;
     }
     .hide-on-med-and-down {
         display: none !important;
