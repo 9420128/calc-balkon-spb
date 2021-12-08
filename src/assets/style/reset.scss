@@ -336,7 +336,8 @@ label.bold {
 @media only screen and (max-width: 992px) {
     input,
     textarea,
-    select {
+    select,
+    option {
         font-size: 17px;
     }
 }

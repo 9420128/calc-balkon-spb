@@ -1,5 +1,5 @@
 <template>
-    <h1>Калькулятор</h1>
+    <h1 v-if="!$route.params.id">Калькулятор</h1>
     <div class="calc m-top">
         <form class="calc__form" @submit.prevent="calc_submit">
             <Card>
@@ -73,7 +73,7 @@
                 v-if="sd_build.length"
                 :sd="sd_build"
                 :catalog="catalog_build"
-                :flag_save="flag_save"
+                :flag_calc="flag_calc"
             />
         </div>
     </div>
@@ -109,6 +109,7 @@ import InputIcon from '../components/html/InputIcon.vue'
 import Sel from '../components/html/Sel.vue'
 import Switches from '../components/html/Switches.vue'
 import Modal from '../components/app/Modal.vue'
+import notic from "@/function/notic";
 export default {
     name: 'Calc',
     components: {
@@ -130,7 +131,7 @@ export default {
         calc_i_tofixed: 0,
         flag_w: true,
         flag_h: true,
-        flag_save: false,
+        flag_calc: false,
         modal_min: false,
         modal_min_text: '',
         material: {
@@ -149,7 +150,7 @@ export default {
             isp: '',
             key: '',
             // montag: '',
-            prim: '',
+            prim: 'Сумма указана с учетом стоимости материала.',
             spec: '',
             user: '',
         },
@@ -325,7 +326,7 @@ export default {
 
                 event.checked = false
 
-                this.flag_save = true // показать кнопку сохранить
+                this.flag_calc = true // показать кнопку сохранить
                 return this.notic('Расчет добавлен')
             } else return this.notic('Ошибка! Расчет не добавлен')
         },
@@ -351,7 +352,7 @@ export default {
                 this.sd[index].p += +sd.p
                 this.sd[index].flag = true
 
-                this.flag_save = true // показать кнопку сохранить
+                this.flag_calc = true // показать кнопку сохранить
                 this.close_modal_min()
 
                 return this.notic('Расчет добавлен')
@@ -433,7 +434,9 @@ export default {
 
             this.sd.push(sd)
 
-            this.flag_save = true // показать кнопку сохранить
+            this.notic('Расчет добавлен')
+
+            this.flag_calc = true // показать кнопку сохранить
         },
 
         notic(text) {
@@ -470,4 +473,7 @@ export default {
 @media (max-width: 1200px)
     .calc
         flex-wrap: wrap
+
+        &__info
+            display: none
 </style>

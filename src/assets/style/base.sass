@@ -51,14 +51,20 @@ h1
     overflow-x: auto
     overflow-y: hidden
 
-.overlow::-webkit-scrollbar
-    height: 10px
+@media only screen and (min-width: 992px)
+    .overlow::-webkit-scrollbar
+        height: 10px
 
-.overlow::-webkit-scrollbar-thumb
-    background-color: #ee6e73
-    border-radius: 100px
+    .overlow::-webkit-scrollbar-thumb
+        background-color: #ee6e73
+        border-radius: 100px
 
+    .tab::-webkit-scrollbar
+        height: 10px
 
+    .tab::-webkit-scrollbar-thumb
+        background-color: #ee6e73
+        border-radius: 100px
 
 // ------------------------------------------------- notic ----------------------------------------
 .notic 
@@ -91,14 +97,6 @@ h1
     opacity: 1
 
 // ------------------------------------------------- tab ----------------------------------------
-
-
-.tab::-webkit-scrollbar
-    height: 10px
-
-.tab::-webkit-scrollbar-thumb
-    background-color: #ee6e73
-    border-radius: 100px
 
 .tab
     display: flex
@@ -165,7 +163,7 @@ h1
 .tab.tab-border > .active > a::before
     background-color: #ee6e73
 
-// ------------------------------------------------- tab ----------------------------------------
+// ------------------------------------------------- btn ----------------------------------------
 
 .fixed-btn
     position: fixed

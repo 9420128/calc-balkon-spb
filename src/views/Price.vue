@@ -19,6 +19,19 @@
                     @click="btn_material_click"
                 >Материал <icon icon="add"
                 /></Btn>
+
+                <Btn
+                    class="btn-prim"
+                    @click="btn_formula_click"
+                >Формула <icon icon="add"
+                /></Btn>
+
+                <Btn
+                    class="btn-prim"
+                    @click="btn_izm_click"
+                >Ед. Изм <icon icon="add"
+                /></Btn>
+
                 <Btn class="btn-danger" @click="flag_edit = !flag_edit"
                 >Редактировать <icon icon="edit"
                 /></Btn>
@@ -236,6 +249,8 @@ export default {
         ...mapGetters(['BD_PRISE_TABS']),
         ...mapGetters(['BD_PRISE_CATALOG']),
         ...mapGetters(['BD_PRISE_MATERIAL']),
+        ...mapGetters(['BD_PRISE_FORMULA']),
+        ...mapGetters(['BD_PRISE_IZM']),
 
         catalog_filter() {
             if (this.BD_PRISE_CATALOG) {
@@ -273,6 +288,26 @@ export default {
         material_f: '',
     }),
     methods: {
+        btn_formula_click(){
+            this.flag_edit = false
+            this.flag_remove = false
+            // this.flag_tabs = true
+            this.modal_header = 'Формулы'
+            this.folder = 'prise/formula'
+
+            this.show_modal()
+        },
+
+        btn_izm_click(){
+            this.flag_edit = false
+            this.flag_remove = false
+            // this.flag_tabs = true
+            this.modal_header = 'Ед. измерения'
+            this.folder = 'prise/izm'
+
+            this.show_modal()
+        },
+
         price_edit_click(event) {
             if (!this.flag_edit) return
 

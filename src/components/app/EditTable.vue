@@ -167,13 +167,13 @@
 
             <print />
 
-            <Btn v-if="flag_save" @click.prevent="save_bd" class="btn-prim"
+            <Btn v-if="btn_submit_visible" @click.prevent="save_bd" class="btn-prim"
                 >Сохранить
                 <icon icon="save" />
             </Btn>
         </div>
 
-        <form @submit.prevent="submit_modal">
+        <form @submit.prevent="submit_modal_edit">
             <Modal v-show="modal" @close="close_modal">
                 <template v-slot:header> Редактирование </template>
                 <template v-slot:body>
@@ -224,7 +224,7 @@ export default {
             type: [Array, Object],
             // required: true,
         },
-        flag_save: {
+        flag_calc: {
             type: Boolean,
             default: () => false,
         },
@@ -236,16 +236,19 @@ export default {
         data_id: '',
         data_folder: '',
         data_text: '',
-        bd_id: '', // id полученный при сохранении cataloga
-        calc: true,
-        // flag_save: false,
+        flag_save: false,
+        route_user: '',
+        route_id: ''  // id полученный при сохранении cataloga
     }),
 
     mounted() {
+        this.flag_save = this.flag_calc
         if (this.catalog.adres && this.sd.length) {
-            this.calc = false
             if (this.$route.params.id) {
-                this.bd_id = this.$route.params.id
+                this.route_id = this.$route.params.id
+            }
+            if (this.$route.params.user) {
+                this.route_user = this.$route.params.user
             }
         }
     },
@@ -253,8 +256,22 @@ export default {
     computed: {
         ...mapGetters(['BD_UID']),
 
+        btn_submit_visible(){
+            let flag_key = false
+            for(let i in this.sd){
+                if(this.sd[i].flag) flag_key = true
+                // else this.flag_save = false
+            }
+
+            if(flag_key) return true
+
+            return this.flag_save
+            // if(this.flag_calc) this.flag_save = this.flag_calc
+            // return this.flag_save
+        },
+
         summ() {
-            if (this.sd) {
+            if (this.sd.length) {
                 const arr = this.filter_sd(this.sd)
                 return Math.round(
                     arr.reduce((accumulator, el) => accumulator + +el.p, 0)
@@ -283,94 +300,6 @@ export default {
     },
 
     methods: {
-        filter_sd(sd) {
-            return Object.keys(sd).map((key) => {
-                if (sd[key])
-                    return {
-                        ...sd[key],
-                        id: key,
-                    }
-            })
-        },
-        edit_catalog(event) {
-            this.show_modal()
-            this.data_folder = 'catalog'
-            this.data_text = event.textContent
-            this.data_key = event.dataset.key
-        },
-        edit_sd(event) {
-            this.show_modal()
-            this.data_folder = 'sd'
-            this.data_text = event.textContent
-            this.data_key = event.dataset.key + '/' + event.dataset.el
-        },
-
-        async submit_modal() {
-            const key = this.data_key.split('/')[0]
-            const name = this.data_key.split('/')[1]
-
-            if (key && name) this.sd[key][name] = this.data_text
-
-            if (!this.calc) {
-                if (this.data_folder) {
-                    let val = {
-                        folder: '',
-                        text: '',
-                    }
-
-                    if (!name) {
-                        val.folder =
-                            'data/' +
-                            this.$route.params.user +
-                            '/' +
-                            this.data_folder +
-                            '/' +
-                            this.$route.params.id +
-                            '/' +
-                            this.data_key
-
-                        val.text = this.data_text
-                    } else {
-                        val.folder =
-                            'data/' +
-                            this.$route.params.user +
-                            '/' +
-                            this.data_folder +
-                            '/' +
-                            this.$route.params.id +
-                            '/' +
-                            key
-
-                        val.text = this.sd[key]
-
-                        if (val.text.flag) delete val.text.flag
-                    }
-
-                    try {
-                        const success = await this.$store.dispatch(
-                            'createValueSetGlobal',
-                            val
-                        )
-
-                        if (success) this.notic('Изменения сохранены')
-
-                        this.close_modal()
-
-                        // this.$router.push('/')
-                    } catch (e) {
-                        console.log(e)
-                    }
-                }
-            } else {
-                if (key && !name) this.catalog[key] = this.data_text
-
-                this.notic('Изменения сохранены')
-
-                this.close_modal()
-            }
-            if(key === 'adres') return this.save_bd()
-        },
-
         show_modal() {
             this.modal = true
 
@@ -384,60 +313,86 @@ export default {
             this.modal = false
         },
 
-        async sd_item_remove(id) {
-            if (!this.calc) {
-                const folder =
-                    'data/' +
-                    this.$route.params.user +
-                    '/sd/' +
-                    this.$route.params.id +
-                    '/' +
-                    id
+        save_success(){
+            this.flag_save = false
+            this.close_modal()
+            this.notic('Изменения сохранены')
+        },
 
-                try {
-                    await this.$store.dispatch('removeFolder', folder)
+        filter_sd(sd) {
+            return Object.keys(sd).map((key) => {
+                if (sd[key])
+                    return {
+                        ...sd[key],
+                        id: key,
+                    }
+            })
+        },
 
-                    this.notic('Данные удалены')
+        edit_catalog(event) {
+            this.show_modal()
+            this.data_folder = 'catalog'
+            this.data_text = event.textContent
+            this.data_key = event.dataset.key
+        },
 
-                    this.close_modal()
+        edit_sd(event) {
+            this.show_modal()
+            this.data_folder = 'sd'
+            this.data_text = event.textContent
+            this.data_key = event.dataset.key + '/' + event.dataset.el
+        },
 
-                    // this.$router.push('/')
-                } catch (e) {
-                    console.log(e)
-                }
-            } else {
-                this.sd.splice(id, 1)
+        async submit_modal_edit() {
+            const key = this.data_key.split('/')[0]
+            const name = this.data_key.split('/')[1]
+
+            if (key && name) {
+                this.sd[key][name] = this.data_text
+                this.sd[key].flag = true
             }
+
+            if (key && !name) this.catalog[key] = this.data_text
+            this.flag_save = true
+            this.close_modal()
+            this.notic('Изменения сохранены')
+
+            if(key === 'adres' && this.sd.length) return this.save_bd()
+        },
+
+        async sd_item_remove(id) {
+            this.sd.splice(id, 1)
+            this.flag_save = true
+            this.notic('Расчет удален')
         },
 
         async sd_remove() {
-            if (!this.calc) {
+            if (this.route_user && this.route_id) {
                 const folder_sd =
                     'data/' +
-                    this.$route.params.user +
+                    this.route_user +
                     '/sd/' +
-                    this.$route.params.id
+                    this.route_id
 
                 const folder_catalog =
                     'data/' +
-                    this.$route.params.user +
+                    this.route_user +
                     '/catalog/' +
-                    this.$route.params.id
+                    this.route_id
 
                 try {
-                    const sd_sucses = await this.$store.dispatch(
+                    const sd_success = await this.$store.dispatch(
                         'removeFolder',
                         folder_sd
                     )
 
-                    const catalog_sucses = await this.$store.dispatch(
+                    const catalog_success = await this.$store.dispatch(
                         'removeFolder',
                         folder_catalog
                     )
 
-                    if (sd_sucses && catalog_sucses) {
+                    if (sd_success && catalog_success) {
                         this.notic('Данные удалены')
-
                         this.close_modal()
 
                         this.$router.push('/')
@@ -446,28 +401,27 @@ export default {
                     console.log(e)
                 }
             } else {
-                if (!this.bd_id) this.sd.splice(0, this.sd.length)
+                if (!this.route_id) this.sd.splice(0, this.sd.length)
                 else {
                     const folder_sd =
-                        'data/' + this.BD_UID + '/sd/' + this.bd_id
+                        'data/' + this.BD_UID + '/sd/' + this.route_id
 
                     const folder_catalog =
-                        'data/' + this.BD_UID + '/catalog/' + this.bd_id
+                        'data/' + this.BD_UID + '/catalog/' + this.route_id
 
                     try {
-                        const sd_sucses = await this.$store.dispatch(
+                        const sd_success = await this.$store.dispatch(
                             'removeFolder',
                             folder_sd
                         )
 
-                        const catalog_sucses = await this.$store.dispatch(
+                        const catalog_success = await this.$store.dispatch(
                             'removeFolder',
                             folder_catalog
                         )
 
-                        if (sd_sucses && catalog_sucses) {
+                        if (sd_success && catalog_success) {
                             this.notic('Данные удалены')
-
                             this.close_modal()
 
                             this.$router.push('/')
@@ -507,7 +461,7 @@ export default {
                 }
 
                 // Если нет id сохраняется новый расчет
-                if (!this.bd_id && this.calc) {
+                if (!this.route_id) {
                     try {
                         const id = await this.$store.dispatch(
                             'createDataPush',
@@ -515,7 +469,7 @@ export default {
                         )
 
                         if (id) {
-                            this.bd_id = id
+                            this.route_id = id
                             sd.folder = 'sd/' + id
 
                             const success = await this.$store.dispatch(
@@ -523,19 +477,17 @@ export default {
                                 sd
                             )
 
-                            if (success) this.notic('Расчет сохранен')
-
-                            this.close_modal()
+                            if (success) {
+                                this.save_success()
+                            }
                         }
-
-                        // this.$router.push('/')
                     } catch (e) {
                         console.log(e)
                     }
                 }
-                // если есть id изменяется существующий расчет
-                if (this.bd_id && this.calc) {
-                    catalog.folder = 'catalog/' + this.bd_id
+                // если есть id сохраняется расчет
+                if (this.route_id && !this.route_user) {
+                    catalog.folder = 'catalog/' + this.route_id
 
                     try {
                         const id = await this.$store.dispatch(
@@ -543,32 +495,32 @@ export default {
                             catalog
                         )
 
-                        sd.folder = 'sd/' + this.bd_id
+                        sd.folder = 'sd/' + this.route_id
 
                         const success = await this.$store.dispatch(
                             'createDataSet',
                             sd
                         )
 
-                        if (id && success) this.notic('Изменения сохранены')
+                        if (id && success) {
+                            this.save_success()
+                        }
 
-                        this.close_modal()
                     } catch (e) {
                         console.log(e)
                     }
                 }
 
                 // Сохранение всех изменений сохраненного заказа глобально
-
-                if (this.bd_id && this.$route.params.user) {
+                if (this.route_id && this.route_user) {
                     catalog.folder =
                         'data/' +
-                        this.$route.params.user +
+                        this.route_user +
                         '/catalog/' +
-                        this.bd_id
+                        this.route_id
 
                     sd.folder =
-                        'data/' + this.$route.params.user + '/sd/' + this.bd_id
+                        'data/' + this.route_user + '/sd/' + this.route_id
 
                     try {
                         const id = await this.$store.dispatch(
@@ -581,9 +533,10 @@ export default {
                             sd
                         )
 
-                        if (id && success) this.notic('Изменения сохранены')
+                        if (id && success) {
+                            this.save_success()
+                        }
 
-                        this.close_modal()
                     } catch (e) {
                         console.log(e)
                     }

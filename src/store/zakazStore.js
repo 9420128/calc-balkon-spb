@@ -54,6 +54,14 @@ export const zakazStore = {
             return getters.BD_USER?.prise?.material
         },
 
+        BD_PRISE_FORMULA(state, getters) {
+            return getters.BD_USER?.prise?.formula
+        },
+
+        BD_PRISE_IZM(state, getters) {
+            return getters.BD_USER?.prise?.izm
+        },
+
         BD_DATA_ALL(state) {
             return state.data
         },

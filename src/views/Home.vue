@@ -25,6 +25,7 @@
                 <tr>
                     <th>{{ user.name }}</th>
                     <th width="100px">Дата</th>
+                    <th width="1px"></th>
                 </tr>
                 <tr
                     v-for="(zakaz, i) in date_filter(BD_DATA_ALL[user.id].catalog)"
@@ -36,6 +37,7 @@
                         }}</router-link>
                     </td>
                     <td>{{ zakaz.data }}</td>
+                    <td><a href="#" @click.prevent="sd_remove(user.id, zakaz.id)"><icon icon="close"></icon></a> </td>
                 </tr>
             </TableMy>
         </div>
@@ -49,9 +51,10 @@ import { mapGetters, mapActions } from 'vuex'
 import TableMy from '../components/html/Table-my.vue'
 import InputIcon from "@/components/html/InputIcon";
 import {indexOf} from "core-js/internals/array-includes";
+import Icon from "@/components/html/Icon";
 export default {
     name: 'Home',
-    components: {InputIcon, Loader, TableMy },
+    components: {Icon, InputIcon, Loader, TableMy },
     data: () => ({
         search: '',
         search_data: []
@@ -122,6 +125,41 @@ export default {
             aray.forEach(el => arr.push(el))
 
             return arr
+        },
+
+        async sd_remove(route_user, route_id) {
+            if (route_user && route_id) {
+                const folder_sd =
+                    'data/' +
+                    route_user +
+                    '/sd/' +
+                    route_id
+
+                const folder_catalog =
+                    'data/' +
+                    route_user +
+                    '/catalog/' +
+                    route_id
+
+                try {
+                    const sd_success = await this.$store.dispatch(
+                        'removeFolder',
+                        folder_sd
+                    )
+
+                    const catalog_success = await this.$store.dispatch(
+                        'removeFolder',
+                        folder_catalog
+                    )
+
+                    if (sd_success && catalog_success) {
+                        this.close_modal()
+                        this.$store.dispatch('notic','Данные удалены')
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+            }
         }
     },
 }

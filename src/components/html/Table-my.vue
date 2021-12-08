@@ -11,12 +11,14 @@ export default {
 </script>
 
 <style lang="sass">
+.edit-table .table
+    min-width: 500px
+
 .table
     border-collapse: collapse
     border-spacing: 0
     width: 100%
     margin-bottom: 20px
-    min-width: 500px
 
     th
         padding: 16px 12px
