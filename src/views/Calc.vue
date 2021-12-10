@@ -145,11 +145,9 @@ export default {
         sd_text: '',
         sd_option: '',
         catalog: {
-            // adres: '',
             data: '',
             isp: '',
             key: '',
-            // montag: '',
             prim: 'Сумма указана с учетом стоимости материала.',
             spec: '',
             user: '',
@@ -203,16 +201,21 @@ export default {
             if (this.BD_PRISE_MATERIAL) {
                 const arr = this.id_map(this.BD_PRISE_MATERIAL)
                 if (arr && this.catalog_id) {
-                    const item = arr.filter(
-                        (el) => el.catalog_id === this.catalog_id
-                    )
+                    let item = []
+                    this.flag_w = this.flag_h = true
+                    arr.forEach((elem, i) => {
+                        if(elem.catalog_id_arr && elem.catalog_id_arr.length){
+                            const el = elem.catalog_id_arr.filter((el) => el === this.catalog_id)
+
+                            if(el.length) item.push(arr[i])
+                        }
+                    })
                     if (item.length) {
+
                         this.material._sum = item[0].material_sum
                         this.material._i = item[0].material_i
                         this.material._f = item[0].material_f
-                        // this.material._name = item[0].name
                         this.sd_option = item[0].name
-                        // this.material._id = item[0].id
                         return item
                     } else {
                         this.material._sum = false
@@ -312,7 +315,10 @@ export default {
         },
 
         calc_s() {
-            return +(this.calc_i * this.material._sum).toFixed(1)
+            const summ = +(this.calc_i * this.material._sum)
+            if(!isNaN(summ))
+                return summ.toFixed(1)
+            else return 0
         },
     },
     methods: {
@@ -346,10 +352,12 @@ export default {
             }
 
             if (index) {
-                console.log(this.sd[index].s)
-                console.log(this.sd[index].p)
-                this.sd[index].s += +sd.s
-                this.sd[index].p += +sd.p
+                let izm = this.sd[index].s
+                this.sd[index].s = +izm + +sd.s
+
+                let summ = this.sd[index].p
+                this.sd[index].p = +summ + +sd.s
+
                 this.sd[index].flag = true
 
                 this.flag_calc = true // показать кнопку сохранить
@@ -403,8 +411,6 @@ export default {
                     this.material._sum = arr[0].material_sum
                     this.material._i = arr[0].material_i
                     this.material._f = arr[0].material_f
-                    // this.material._name = arr[0].name
-                    // this.material._id = arr[0].id
                 }
             }
         },

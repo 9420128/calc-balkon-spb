@@ -5,32 +5,22 @@
 
         <div class="flex between  m-top-2">
             <div class="btn-grup" v-if="flag_btn">
-                <Btn class="btn-prim" @click="btn_tabs_click"
+                <Btn @click="btn_tabs_click"
                 >Услуга <icon icon="add"
                 /></Btn>
 
                 <!-- v-if="flag_catalog" -->
-                <Btn class="btn-prim" @click="btn_catalog_click"
+                <Btn @click="btn_catalog_click"
                 >Вид работы <icon icon="add"
                 /></Btn>
                 <Btn
                     v-if="catalog_filter && catalog_filter.length"
-                    class="btn-prim"
                     @click="btn_material_click"
                 >Материал <icon icon="add"
                 /></Btn>
 
-                <Btn
-                    class="btn-prim"
-                    @click="btn_formula_click"
-                >Формула <icon icon="add"
-                /></Btn>
-
-                <Btn
-                    class="btn-prim"
-                    @click="btn_izm_click"
-                >Ед. Изм <icon icon="add"
-                /></Btn>
+                <PriceFormula folder="formula" :BD="BD_PRISE_FORMULA" btn_text="Формулы"/>
+                <PriceFormula folder="izm" :BD="BD_PRISE_IZM" btn_text="Ед. Изм."/>
 
                 <Btn class="btn-danger" @click="flag_edit = !flag_edit"
                 >Редактировать <icon icon="edit"
@@ -93,12 +83,7 @@
                         <td style="padding: 0" colspan="3">
                             <table class="tr-table table-divider">
                                 <tbody :class="{ edit: flag_edit }">
-                                    <tr
-                                        v-for="material in material_filter(
-                                            catalog.id
-                                        )"
-                                        :key="material.id"
-                                    >
+                                    <tr v-for="material in material_filter(catalog.id)" :key="material.id">
                                         <td
                                             :data-id="material.id"
                                             data-key="material"
@@ -140,14 +125,9 @@
                     </div>
                     <div>
                         <div v-if="flag_material">
-                            <sel
-                                label="Вид работы"
-                                v-if="catalog_filter.length"
-                                :options="catalog_filter"
-                                :selected_disabled="true"
-                                @change="catalog_id = $event.target.value"
-                                :selected="catalog_id ? catalog_id : ''"
-                            />
+                            <p v-for="(el, i) in catalog_filter" :key="el.id">
+                                <checkboxes :id="el.id" :name="el.name" :checked="checkbox_checked(el.id)" @change="checkbox_change($event.target, i)"/>
+                            </p>
 
                             <input-icon
                                 type="tel"
@@ -157,7 +137,7 @@
 
                             <sel
                                 label="Еденица измерения"
-                                :options="BD_MATERIAL_I"
+                                :options="BD_PRISE_IZM"
                                 @change="
                                     material_i =
                                         $event.target.options[
@@ -171,7 +151,7 @@
 
                             <sel
                                 label="Формула подсчета"
-                                :options="BD_MATERIAL_F"
+                                :options="BD_PRISE_FORMULA"
                                 @change="
                                     material_f =
                                         $event.target.options[
@@ -227,10 +207,14 @@ import Grid from '@/components/html/Grid'
 import InputIcon from '@/components/html/InputIcon'
 import Sel from '@/components/html/Sel'
 import Print from '../components/app/Print.vue'
+import PriceFormula from "@/components/app/PriceFormula";
+import Checkboxes from "@/components/html/Checkboxes";
 
 export default {
     name: 'price',
     components: {
+        Checkboxes,
+        PriceFormula,
         Sel,
         InputIcon,
         Grid,
@@ -243,8 +227,6 @@ export default {
         Print,
     },
     computed: {
-        ...mapGetters(['BD_MATERIAL_F']),
-        ...mapGetters(['BD_MATERIAL_I']),
         ...mapGetters(['BD_USER_PRISE']),
         ...mapGetters(['BD_PRISE_TABS']),
         ...mapGetters(['BD_PRISE_CATALOG']),
@@ -274,7 +256,7 @@ export default {
         data_text: '', // Текст из textarea
         folder: '', // Путь сохранения в базе данных
         tab_id: '',
-        catalog_id: '',
+        catalog_id_arr: [],
         menu_num: 1,
         flag_tabs: false,
         flag_catalog: false,
@@ -288,24 +270,24 @@ export default {
         material_f: '',
     }),
     methods: {
-        btn_formula_click(){
-            this.flag_edit = false
-            this.flag_remove = false
-            // this.flag_tabs = true
-            this.modal_header = 'Формулы'
-            this.folder = 'prise/formula'
-
-            this.show_modal()
+        checkbox_checked(id){
+            if(this.catalog_id_arr.length){
+                const flag = this.catalog_id_arr.filter(el => el === id)
+                if(flag.length) return true
+                else return false
+            }
         },
 
-        btn_izm_click(){
-            this.flag_edit = false
-            this.flag_remove = false
-            // this.flag_tabs = true
-            this.modal_header = 'Ед. измерения'
-            this.folder = 'prise/izm'
+        checkbox_change(event, i){
+            const id = event.id
+            const checked = event.checked
 
-            this.show_modal()
+            if(id && checked) {
+                this.catalog_id_arr.push(id)
+            }
+            if(id && !checked){
+                this.catalog_id_arr = this.catalog_id_arr.filter(el => el !== id)
+            }
         },
 
         price_edit_click(event) {
@@ -324,7 +306,6 @@ export default {
                 this.menu_num = item.num
 
                 this.tab_id = item.tab_id ? item.tab_id : ''
-                this.catalog_id = item.catalog_id ? item.catalog_id : ''
                 this.material_sum = item.material_sum ? item.material_sum : ''
                 this.material_i = item.material_i ? item.material_i : ''
                 this.material_f = item.material_f ? item.material_f : ''
@@ -347,16 +328,14 @@ export default {
 
                 if (key === 'catalog') {
                     this.flag_catalog = true
-                    const arr = this.BD_PRISE_MATERIAL
-
-                    for (let i in arr) {
-                        const el = arr[i]
-                        if (el.catalog_id === id) this.flag_remove = false
-                    }
+                    // Запрет на удаление Вид работы если в нем есть материал
+                    const item = this.material_filter(id)
+                    if(item.length) this.flag_remove = false
                 }
 
                 if (key === 'material') {
                     this.flag_material = true
+                    this.catalog_id_arr = item.catalog_id_arr
                 }
 
                 this.show_modal()
@@ -365,8 +344,21 @@ export default {
 
         material_filter(id) {
             if (this.BD_PRISE_MATERIAL) {
-                const arr = this.id_map(this.BD_PRISE_MATERIAL)
-                return arr.filter((el) => el.catalog_id === id)
+                const arr = this.id_map(this.BD_PRISE_MATERIAL) // все материалы
+                let array = []
+                arr.forEach((elem, i) => {
+                    if(elem.catalog_id_arr && elem.catalog_id_arr.length){
+                        const item = elem.catalog_id_arr.filter((el) => el === id)
+                        if(item.length) {
+                            array.push(arr[i])
+                        }
+                    }
+                })
+                if(array.length) {
+                    return array
+                }
+                else
+                    return false
             }
         },
 
@@ -419,12 +411,12 @@ export default {
                         )
                 }
 
-                val.text.catalog_id = this.catalog_id
+                val.text.catalog_id_arr = this.catalog_id_arr
                 val.text.material_sum = this.material_sum
                 val.text.material_i = this.material_i
                 val.text.material_f = this.material_f
 
-                if (!val.text.catalog_id)
+                if (!val.text.catalog_id_arr.length)
                     return this.notic('Отмена! Не заполнено поле Вид работы')
             }
 
@@ -456,8 +448,8 @@ export default {
                 this.material_sum =
                     this.material_i =
                     this.material_f =
-                    this.catalog_id =
                         ''
+                this.catalog_id_arr = []
 
                 this.menu_num++
 
@@ -471,6 +463,7 @@ export default {
             this.flag_tabs = true
             this.modal_header = 'Добавить услугу'
             this.folder = 'prise/tabs'
+            this.catalog_id_arr = []
 
             this.show_modal()
         },
@@ -481,6 +474,8 @@ export default {
             this.flag_catalog = true
             this.modal_header = 'Добавить вид работы'
             this.folder = 'prise/catalog'
+            this.catalog_id_arr = []
+
             this.tab_id = this.$route.hash.replace('#', '')
             this.show_modal()
         },
@@ -489,6 +484,8 @@ export default {
             this.flag_edit = false
             this.flag_remove = false
             this.flag_material = true
+            this.catalog_id_arr = []
+
             this.modal_header = 'Добавить материал'
             this.folder = 'prise/material'
 

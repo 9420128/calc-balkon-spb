@@ -44,9 +44,9 @@ figure {
     margin: 0 0 20px 0;
 }
 
-// ul > :last-child {
-//     margin-bottom: 0;
-// }
+*, *:before, *:after {
+    box-sizing: inherit;
+}
 
 button {
     text-decoration: none;
@@ -255,7 +255,6 @@ label.bold {
     pointer-events: none;
 }
 
-[type='checkbox'],
 [type='radio'] {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;

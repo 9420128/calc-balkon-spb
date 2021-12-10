@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { getDatabase, ref, set, onValue, push, remove } from 'firebase/database'
+import { getDatabase, ref, set, push, remove } from 'firebase/database'
 export default {
     actions: {
         // получить все закзы

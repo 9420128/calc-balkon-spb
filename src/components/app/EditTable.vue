@@ -260,14 +260,11 @@ export default {
             let flag_key = false
             for(let i in this.sd){
                 if(this.sd[i].flag) flag_key = true
-                // else this.flag_save = false
             }
 
             if(flag_key) return true
 
             return this.flag_save
-            // if(this.flag_calc) this.flag_save = this.flag_calc
-            // return this.flag_save
         },
 
         summ() {

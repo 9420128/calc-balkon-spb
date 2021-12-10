@@ -97,10 +97,6 @@ export default {
 .modal-body {
     position: relative;
     padding: 0 15px;
-    /* overflow: auto;
-    min-height: 150px;
-    max-height: 580px;
-    -webkit-overflow-scrolling: touch; */
 }
 
 .btn-close {

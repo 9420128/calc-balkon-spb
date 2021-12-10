@@ -11,7 +11,7 @@
                 <i class="large material-icons">add</i>
             </router-link>
         </div>
-        <div class="footter"></div>
+        <div class="footer"></div>
     </div>
 </template>
 
@@ -25,12 +25,10 @@ export default {
     components: { Header, Container },
 
     mounted() {
-        // this.SETTING_BUILD()
         this.DATA_ALL_BUILD()
         this.USER_ALL_BUILD()
     },
     methods: {
-        // ...mapActions(['SETTING_BUILD']),
         ...mapActions(['DATA_ALL_BUILD']),
         ...mapActions(['USER_ALL_BUILD']),
 
@@ -47,7 +45,7 @@ export default {
 }
 </script>
 <style scoped>
-.footter {
+.footer {
     display: block;
     height: 60px;
 }
