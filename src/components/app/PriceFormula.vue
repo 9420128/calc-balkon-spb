@@ -1,5 +1,5 @@
 <template>
-    <Link @click.prevent="btn_click"><icon icon="add" /> {{ btn_text }} </Link>
+    <Links @click.prevent="btn_click"><icon icon="add" /> {{ btn_text }} </Links>
     <modal v-if="modal" :modal_min="true" @close="close_modal">
         <template v-slot:header>{{ btn_text }}</template>
         <template v-slot:body>
@@ -39,10 +39,10 @@ import Icon from '@/components/html/Icon'
 import Modal from '@/components/app/Modal'
 import InputIcon from '@/components/html/InputIcon'
 import TableMy from '@/components/html/Table-my'
-import Link from '../html/Link.vue'
+import Links from '../html/Links.vue'
 export default {
     name: 'price-formula',
-    components: { TableMy, InputIcon, Modal, Icon, Btn, Link },
+    components: { TableMy, InputIcon, Modal, Icon, Btn, Links },
 
     data: () => ({
         modal: false,

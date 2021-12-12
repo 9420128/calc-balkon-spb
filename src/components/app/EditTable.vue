@@ -251,6 +251,8 @@ export default {
                 this.route_user = this.$route.params.user
             }
         }
+
+        this.modal_enter()
     },
 
     computed: {
@@ -297,6 +299,27 @@ export default {
     },
 
     methods: {
+        modal_enter(){
+                let pressed = new Set()
+                const codes = ['ControlLeft', 'Enter']
+                document.addEventListener('keydown', (event) => {
+                    pressed.add(event.code)
+                    for (let code of codes) {
+                        if (!pressed.has(code)) {
+                            return
+                        }
+                    }
+                    pressed.clear()
+                    if(this.modal) {
+                        this.submit_modal_edit()
+                        this.modal = false
+                    }
+                })
+                document.addEventListener('keyup', function (event) {
+                    pressed.delete(event.code)
+                })
+        },
+
         show_modal() {
             this.modal = true
 
@@ -312,7 +335,6 @@ export default {
 
         save_success(){
             this.flag_save = false
-            this.close_modal()
             this.notic('Изменения сохранены')
         },
 
@@ -390,7 +412,6 @@ export default {
 
                     if (sd_success && catalog_success) {
                         this.notic('Данные удалены')
-                        this.close_modal()
 
                         this.$router.push('/')
                     }
@@ -419,7 +440,6 @@ export default {
 
                         if (sd_success && catalog_success) {
                             this.notic('Данные удалены')
-                            this.close_modal()
 
                             this.$router.push('/')
                         }

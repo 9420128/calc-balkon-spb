@@ -1,9 +1,12 @@
 <template>
-    <Loader v-if="loader" />
+
     <div class="price">
         <h1>Прайс</h1>
+        <Loader v-if="!BD_PRISE_TABS" />
 
-        <Tabs :tabs="id_map(BD_PRISE_TABS)" class="m-top" />
+        <h3 v-else-if="BD_PRISE_TABS && Object.keys(BD_PRISE_TABS).length == 0">Прайс еще не заполнен</h3>
+
+        <Tabs v-else :tabs="id_map(BD_PRISE_TABS)" class="m-top" />
 
         <div class="overlow" v-if="flag_edit">
             <table class="table table-divider">
@@ -77,7 +80,7 @@
         </div>
     </div>
 
-    <form @submit.prevent="submit_modal()">
+    <form @submit.prevent="submit_modal">
         <Modal v-show="modal" @close="close_modal">
             <template v-slot:header>
                 {{ modal_header }}
@@ -153,16 +156,14 @@
             </template>
             <template v-slot:footer>
                 <div class="btn-grup">
-                    <button
-                        type="button"
-                        class="btn"
+                    <btn
                         @click.prevent="close_modal"
                     >
                         Закрыть
-                    </button>
-                    <button type="submit" class="btn btn-prim">
+                    </btn>
+                    <btn type="submit" class="btn btn-prim">
                         Сохранить
-                    </button>
+                    </btn>
                 </div>
             </template>
         </Modal>
@@ -170,27 +171,27 @@
     <div class="sidenav" :class="{ open: flag_btn }">
         <div class="sidenav__body">
             <div class="flex sidenav__close">
-                <a href="#" @click.prevent="flag_btn = false">
+                <links @click.prevent="flag_btn = false">
                     <Icon icon="close" />
-                </a>
+                </links>
             </div>
             <ul>
                 <li>
-                    <Link @click.prevent="btn_tabs_click"
-                        ><icon icon="add" /> Услуга</Link
+                    <Links @click.prevent="btn_tabs_click"
+                        ><icon icon="add" /> Услуга</Links
                     >
                 </li>
                 <li>
-                    <Link @click.prevent="btn_catalog_click"
-                        ><icon icon="add" /> Вид работы</Link
+                    <Links @click.prevent="btn_catalog_click"
+                        ><icon icon="add" /> Вид работы</Links
                     >
                 </li>
                 <li>
-                    <Link
+                    <Links
                         v-if="catalog_filter && catalog_filter.length"
                         @click.prevent="btn_material_click"
                     >
-                        <icon icon="add" /> Материал</Link
+                        <icon icon="add" /> Материал</Links
                     >
                 </li>
                 <li>
@@ -209,9 +210,9 @@
                 </li>
 
                 <li>
-                    <Link @click.prevent="flag_edit = !flag_edit"
+                    <Links @click.prevent="flag_edit = !flag_edit"
                         ><icon icon="edit" /> Редактировать
-                    </Link>
+                    </Links>
                 </li>
             </ul>
             <div class="sidenav__footer">
@@ -220,18 +221,16 @@
         </div>
     </div>
     <div class="fixed-btn btn-edit">
-        <a
-            href="#"
+        <links
             class="fixed-btn__btn btn-icon"
             @click.prevent="flag_btn = !flag_btn"
-            ><i class="large material-icons">edit</i></a
+            ><i class="large material-icons">edit</i></links
         >
     </div>
 </template>
 
 <script>
 import Loader from '../components/app/Loader.vue'
-/* eslint-disable */
 import { mapGetters } from 'vuex'
 import TableMy from '../components/html/Table-my.vue'
 import Btn from '../components/html/Btn.vue'
@@ -244,7 +243,7 @@ import Sel from '@/components/html/Sel'
 import Print from '../components/app/Print.vue'
 import PriceFormula from '@/components/app/PriceFormula'
 import Checkboxes from '@/components/html/Checkboxes'
-import Link from '../components/html/Link.vue'
+import Links from '../components/html/Links.vue'
 
 export default {
     name: 'price',
@@ -261,7 +260,7 @@ export default {
         Loader,
         Modal,
         Print,
-        Link,
+        Links,
     },
 
     computed: {
@@ -307,7 +306,31 @@ export default {
         material_i: '',
         material_f: '',
     }),
+    mounted() {
+        this.modal_enter()
+    },
     methods: {
+        modal_enter(){
+            let pressed = new Set()
+            const codes = ['ControlLeft', 'Enter']
+            document.addEventListener('keydown', (event) => {
+                pressed.add(event.code)
+                for (let code of codes) {
+                    if (!pressed.has(code)) {
+                        return
+                    }
+                }
+                pressed.clear()
+                if(this.modal) {
+                    this.submit_modal()
+                    this.modal = false
+                }
+            })
+            document.addEventListener('keyup', function (event) {
+                pressed.delete(event.code)
+            })
+        },
+
         checkbox_checked(id) {
             if (this.catalog_id_arr.length) {
                 const flag = this.catalog_id_arr.filter((el) => el === id)
@@ -574,21 +597,6 @@ export default {
 
             this.flag_edit = false
         },
-    },
-
-    watch: {
-        // '$route.hash': {
-        //     handler: function (hash) {
-        //         this.catalog_filter
-        //         // const id = hash.replace('#', '')
-        //         // for (let i in this.BD_PRISE_CATALOG) {
-        //         //     const el = this.BD_PRISE_CATALOG[i]
-        //         //     // if (el.tab_id === id) this.flag_catalog = false
-        //         // }
-        //     },
-        //     deep: true,
-        //     immediate: true,
-        // },
     },
 }
 </script>
