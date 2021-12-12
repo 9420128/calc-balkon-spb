@@ -3,40 +3,6 @@
     <div class="price">
         <h1>Прайс</h1>
 
-        <div class="flex between  m-top-2">
-            <div class="btn-grup" v-if="flag_btn">
-                <Btn @click="btn_tabs_click"
-                >Услуга <icon icon="add"
-                /></Btn>
-
-                <!-- v-if="flag_catalog" -->
-                <Btn @click="btn_catalog_click"
-                >Вид работы <icon icon="add"
-                /></Btn>
-                <Btn
-                    v-if="catalog_filter && catalog_filter.length"
-                    @click="btn_material_click"
-                >Материал <icon icon="add"
-                /></Btn>
-
-                <PriceFormula folder="formula" :BD="BD_PRISE_FORMULA" btn_text="Формулы"/>
-                <PriceFormula folder="izm" :BD="BD_PRISE_IZM" btn_text="Ед. Изм."/>
-
-                <Btn class="btn-danger" @click="flag_edit = !flag_edit"
-                >Редактировать <icon icon="edit"
-                /></Btn>
-                <print />
-            </div>
-            <div>
-                <btn v-if="flag_btn" class="button-icon btn-danger" @click="flag_btn = !flag_btn">
-                    <icon icon="keyboard_arrow_left" />
-                </btn>
-                <btn v-else class="button-icon btn-danger" @click="flag_btn = !flag_btn">
-                    <icon icon="keyboard_arrow_right" />
-                </btn>
-            </div>
-        </div>
-
         <Tabs :tabs="id_map(BD_PRISE_TABS)" class="m-top" />
 
         <div class="overlow" v-if="flag_edit">
@@ -83,7 +49,12 @@
                         <td style="padding: 0" colspan="3">
                             <table class="tr-table table-divider">
                                 <tbody :class="{ edit: flag_edit }">
-                                    <tr v-for="material in material_filter(catalog.id)" :key="material.id">
+                                    <tr
+                                        v-for="material in material_filter(
+                                            catalog.id
+                                        )"
+                                        :key="material.id"
+                                    >
                                         <td
                                             :data-id="material.id"
                                             data-key="material"
@@ -103,7 +74,6 @@
                     </tr>
                 </tbody>
             </TableMy>
-
         </div>
     </div>
 
@@ -126,7 +96,12 @@
                     <div>
                         <div v-if="flag_material">
                             <p v-for="(el, i) in catalog_filter" :key="el.id">
-                                <checkboxes :id="el.id" :name="el.name" :checked="checkbox_checked(el.id)" @change="checkbox_change($event.target, i)"/>
+                                <checkboxes
+                                    :id="el.id"
+                                    :name="el.name"
+                                    :checked="checkbox_checked(el.id)"
+                                    @change="checkbox_change($event.target, i)"
+                                />
                             </p>
 
                             <input-icon
@@ -192,6 +167,66 @@
             </template>
         </Modal>
     </form>
+    <div class="sidenav" :class="{ open: flag_btn }">
+        <div class="sidenav__body">
+            <div class="flex sidenav__close">
+                <a href="#" @click.prevent="flag_btn = false">
+                    <Icon icon="close" />
+                </a>
+            </div>
+            <ul>
+                <li>
+                    <Link @click.prevent="btn_tabs_click"
+                        ><icon icon="add" /> Услуга</Link
+                    >
+                </li>
+                <li>
+                    <Link @click.prevent="btn_catalog_click"
+                        ><icon icon="add" /> Вид работы</Link
+                    >
+                </li>
+                <li>
+                    <Link
+                        v-if="catalog_filter && catalog_filter.length"
+                        @click.prevent="btn_material_click"
+                    >
+                        <icon icon="add" /> Материал</Link
+                    >
+                </li>
+                <li>
+                    <PriceFormula
+                        folder="formula"
+                        :BD="BD_PRISE_FORMULA"
+                        btn_text="Формулы"
+                    />
+                </li>
+                <li>
+                    <PriceFormula
+                        folder="izm"
+                        :BD="BD_PRISE_IZM"
+                        btn_text="Ед. Изм."
+                    />
+                </li>
+
+                <li>
+                    <Link @click.prevent="flag_edit = !flag_edit"
+                        ><icon icon="edit" /> Редактировать
+                    </Link>
+                </li>
+            </ul>
+            <div class="sidenav__footer">
+                <print />
+            </div>
+        </div>
+    </div>
+    <div class="fixed-btn btn-edit">
+        <a
+            href="#"
+            class="fixed-btn__btn btn-icon"
+            @click.prevent="flag_btn = !flag_btn"
+            ><i class="large material-icons">edit</i></a
+        >
+    </div>
 </template>
 
 <script>
@@ -207,8 +242,9 @@ import Grid from '@/components/html/Grid'
 import InputIcon from '@/components/html/InputIcon'
 import Sel from '@/components/html/Sel'
 import Print from '../components/app/Print.vue'
-import PriceFormula from "@/components/app/PriceFormula";
-import Checkboxes from "@/components/html/Checkboxes";
+import PriceFormula from '@/components/app/PriceFormula'
+import Checkboxes from '@/components/html/Checkboxes'
+import Link from '../components/html/Link.vue'
 
 export default {
     name: 'price',
@@ -225,7 +261,9 @@ export default {
         Loader,
         Modal,
         Print,
+        Link,
     },
+
     computed: {
         ...mapGetters(['BD_USER_PRISE']),
         ...mapGetters(['BD_PRISE_TABS']),
@@ -270,23 +308,25 @@ export default {
         material_f: '',
     }),
     methods: {
-        checkbox_checked(id){
-            if(this.catalog_id_arr.length){
-                const flag = this.catalog_id_arr.filter(el => el === id)
-                if(flag.length) return true
+        checkbox_checked(id) {
+            if (this.catalog_id_arr.length) {
+                const flag = this.catalog_id_arr.filter((el) => el === id)
+                if (flag.length) return true
                 else return false
             }
         },
 
-        checkbox_change(event, i){
+        checkbox_change(event, i) {
             const id = event.id
             const checked = event.checked
 
-            if(id && checked) {
+            if (id && checked) {
                 this.catalog_id_arr.push(id)
             }
-            if(id && !checked){
-                this.catalog_id_arr = this.catalog_id_arr.filter(el => el !== id)
+            if (id && !checked) {
+                this.catalog_id_arr = this.catalog_id_arr.filter(
+                    (el) => el !== id
+                )
             }
         },
 
@@ -330,7 +370,7 @@ export default {
                     this.flag_catalog = true
                     // Запрет на удаление Вид работы если в нем есть материал
                     const item = this.material_filter(id)
-                    if(item.length) this.flag_remove = false
+                    if (item.length) this.flag_remove = false
                 }
 
                 if (key === 'material') {
@@ -347,18 +387,18 @@ export default {
                 const arr = this.id_map(this.BD_PRISE_MATERIAL) // все материалы
                 let array = []
                 arr.forEach((elem, i) => {
-                    if(elem.catalog_id_arr && elem.catalog_id_arr.length){
-                        const item = elem.catalog_id_arr.filter((el) => el === id)
-                        if(item.length) {
+                    if (elem.catalog_id_arr && elem.catalog_id_arr.length) {
+                        const item = elem.catalog_id_arr.filter(
+                            (el) => el === id
+                        )
+                        if (item.length) {
                             array.push(arr[i])
                         }
                     }
                 })
-                if(array.length) {
+                if (array.length) {
                     return array
-                }
-                else
-                    return false
+                } else return false
             }
         },
 
@@ -445,10 +485,7 @@ export default {
 
                 this.tab_id = this.folder = ''
 
-                this.material_sum =
-                    this.material_i =
-                    this.material_f =
-                        ''
+                this.material_sum = this.material_i = this.material_f = ''
                 this.catalog_id_arr = []
 
                 this.menu_num++
@@ -571,5 +608,8 @@ export default {
 }
 .edit > tr > td:first-child:hover {
     background-color: #ffc2b9;
+}
+.fixed-btn.btn-edit {
+    bottom: 120px;
 }
 </style>

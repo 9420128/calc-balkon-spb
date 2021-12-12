@@ -46,7 +46,7 @@
                 </Grid>
                 <template v-slot:footer>
                     <div class="flex gap-2">
-                        <div class="calc__info hidden">
+                        <div class="calc__info hidden-550">
                             S: {{ calc_i_tofixed }} {{ material._i }}
                         </div>
                         <div class="calc__info">₽: {{ calc_s }}</div>
@@ -322,7 +322,7 @@ export default {
 
         calc_s() {
             const summ = +(this.calc_i * this.material._sum)
-            if (!isNaN(summ)) return summ.toFixed(1)
+            if (!isNaN(summ)) return +summ.toFixed(1)
             else return 0
         },
     },
@@ -486,7 +486,6 @@ export default {
         flex-wrap: wrap
 
 @media (max-width: 550px)
-
-        .hidden
-            display: none
+    .hidden-550
+        display: none
 </style>

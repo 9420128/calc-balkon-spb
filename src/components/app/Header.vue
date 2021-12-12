@@ -238,6 +238,8 @@ nav ul a:hover {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     transition: left 0.3s ease-out;
+    box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%),
+        0 1px 5px 0 rgb(0 0 0 / 20%);
 }
 
 .sidenav.open {
@@ -262,14 +264,19 @@ nav ul a:hover {
 .sidenav li > a {
     color: rgba(0, 0, 0, 0.87);
     display: block;
-    font-size: 14px;
     font-weight: 500;
     height: 48px;
     line-height: 48px;
+}
+
+.sidenav__footer,
+.sidenav li > a {
     padding: 0 32px;
 }
 
-.sidenav li > a:hover {
+.sidenav li > a:hover,
+.sidenav li > a:active,
+.sidenav li > a:focus {
     background-color: rgba(0, 0, 0, 0.05);
 }
 </style>
