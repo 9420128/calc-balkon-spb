@@ -58,8 +58,8 @@ export default {
     height: 0;
 }
 
-[type='checkbox']:not(:checked),
-[type='checkbox']:checked {
+.switch > label > input[type='checkbox']:not(:checked),
+.switch > label > input[type='checkbox']:checked {
     position: absolute;
     opacity: 0;
     pointer-events: none;

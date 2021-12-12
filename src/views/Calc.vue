@@ -46,7 +46,7 @@
                 </Grid>
                 <template v-slot:footer>
                     <div class="flex gap-2">
-                        <div class="calc__info">
+                        <div class="calc__info hidden">
                             S: {{ calc_i_tofixed }} {{ material._i }}
                         </div>
                         <div class="calc__info">₽: {{ calc_s }}</div>
@@ -109,7 +109,6 @@ import InputIcon from '../components/html/InputIcon.vue'
 import Sel from '../components/html/Sel.vue'
 import Switches from '../components/html/Switches.vue'
 import Modal from '../components/app/Modal.vue'
-import notic from "@/function/notic";
 export default {
     name: 'Calc',
     components: {
@@ -204,14 +203,15 @@ export default {
                     let item = []
                     this.flag_w = this.flag_h = true
                     arr.forEach((elem, i) => {
-                        if(elem.catalog_id_arr && elem.catalog_id_arr.length){
-                            const el = elem.catalog_id_arr.filter((el) => el === this.catalog_id)
+                        if (elem.catalog_id_arr && elem.catalog_id_arr.length) {
+                            const el = elem.catalog_id_arr.filter(
+                                (el) => el === this.catalog_id
+                            )
 
-                            if(el.length) item.push(arr[i])
+                            if (el.length) item.push(arr[i])
                         }
                     })
                     if (item.length) {
-
                         this.material._sum = item[0].material_sum
                         this.material._i = item[0].material_i
                         this.material._f = item[0].material_f
@@ -234,6 +234,9 @@ export default {
             let formula = this.material._f
 
             if (!formula) return
+
+            if (isNaN(this.calc_h) || !this.calc_h) this.calc_h = 0
+            if (isNaN(this.calc_w) || !this.calc_w) this.calc_w = 0
 
             if (formula.indexOf('h') === -1) this.flag_h = false
             else this.flag_h = true
@@ -268,8 +271,11 @@ export default {
 
             let res = parseBrackets(formula)
 
-            if (isNaN(+res)) res = 0
-            else res = +res
+            if (isNaN(+res)) {
+                res = eval(formula)
+
+                if (isNaN(+res) || +res <= 0) res = 0
+            } else res = +res
 
             this.calc_i_tofixed = +res.toFixed(2)
 
@@ -316,8 +322,7 @@ export default {
 
         calc_s() {
             const summ = +(this.calc_i * this.material._sum)
-            if(!isNaN(summ))
-                return summ.toFixed(1)
+            if (!isNaN(summ)) return summ.toFixed(1)
             else return 0
         },
     },
@@ -480,6 +485,8 @@ export default {
     .calc
         flex-wrap: wrap
 
-        &__info
+@media (max-width: 550px)
+
+        .hidden
             display: none
 </style>

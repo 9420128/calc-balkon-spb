@@ -3,10 +3,13 @@
         <nav class="nav-extended">
             <div class="nav-wrapper container">
                 <router-link to="/" class="brand-logo">calc</router-link>
-                <a href="#" data-target="mobile-demo" class="sidenav-trigger"
+                <a
+                    href="#"
+                    class="sidenav-trigger"
+                    @click.prevent="menu_mobile = !menu_mobile"
                     ><i class="material-icons">menu</i></a
                 >
-                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <ul class="right hide-on-med-and-down">
                     <li>
                         <a @click.prevent="logout" href="/login?message=login"
                             >Выйти</a
@@ -30,24 +33,37 @@
             </div>
         </nav>
 
-        <!-- <ul class="sidenav" id="mobile-demo">
-            <li><a href="sass.html">Sass</a></li>
-            <li><a href="badges.html">Components</a></li>
-            <li><a href="collapsible.html">JavaScript</a></li>
-        </ul> -->
+        <div class="sidenav" :class="{ open: menu_mobile }">
+            <div class="sidenav__body">
+                <div class="flex sidenav__close">
+                    <a href="#" @click.prevent="menu_mobile = false">
+                        <Icon icon="close" />
+                    </a>
+                </div>
+                <ul>
+                    <li>
+                        <a @click.prevent="logout" href="/login?message=login"
+                            >Выйти</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
+import Icon from '../html/Icon.vue'
 export default {
+    components: { Icon },
     name: 'Header',
     data: () => ({
         tabs: [
             { to: '/', text: 'Главная' },
             { to: '/price', text: 'Прайс' },
-            { to: '/contact', text: 'Контакты' },
             { to: '/calc', text: 'Калькулятор' },
         ],
+        menu_mobile: false,
     }),
     mounted() {},
     methods: {
@@ -199,81 +215,43 @@ nav ul a:hover {
 
 /* nav content */
 
-/* 
-.tabs {
-    position: relative;
-    overflow-x: auto;
-    overflow-y: hidden;
-    height: 48px;
-    width: 100%;
-    background-color: transparent;
-    margin: 0 auto;
-    white-space: nowrap;
-}
-
-.tabs .tab {
-    display: inline-block;
-    text-align: center;
-    line-height: 48px;
-    height: 48px;
-    padding: 0;
-    margin: 0;
-    text-transform: uppercase;
-}
-
-.tab a {
-    color: rgba(255, 255, 255, 0.7);
-    display: block;
-    width: 100%;
-    height: 100%;
-    padding: 0 24px;
-    font-size: 14px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    -webkit-transition: color 0.28s ease, background-color 0.28s ease;
-    transition: color 0.28s ease, background-color 0.28s ease;
-    position: relative;
-}
-
-.tab a:hover,
-.tab a.active {
-    background-color: transparent;
-    color: #fff;
-}
-
-.tab a.active::before {
-    content: '';
-    position: absolute;
-    left: 1em;
-    right: 1em;
-    bottom: 0;
-    height: 2px;
-    background-color: white;
-} */
-
 /* sidenav */
 
 .sidenav {
+    display: none;
     position: fixed;
-    width: 300px;
-    left: 0;
     top: 0;
-    margin: 0;
-    -webkit-transform: translateX(-100%);
-    transform: translateX(-100%);
-    height: 100%;
-    height: calc(100% + 60px);
-    height: -moz-calc(100%);
-    padding-bottom: 60px;
-    background-color: #fff;
-    z-index: 999;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    transition: left 0.3s ease-out;
+}
+
+.sidenav__body {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -270px;
+    box-sizing: border-box;
+    width: 270px;
+    background: #fff;
     overflow-y: auto;
-    will-change: transform;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -webkit-transform: translateX(-105%);
-    transform: translateX(-105%);
-    /* transform: translateX(0%); open */
+    -webkit-overflow-scrolling: touch;
+    transition: left 0.3s ease-out;
+}
+
+.sidenav.open {
+    display: block;
+}
+
+.open > .sidenav__body {
+    left: 0;
+}
+
+.sidenav__close {
+    font-size: 2rem;
+    justify-content: flex-end;
+    padding: 2rem;
 }
 
 .sidenav li {

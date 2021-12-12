@@ -27,11 +27,13 @@ export const zakazStore = {
         // },
 
         BD_USER_ALL(state) {
-            // return state.user
-            return Object.keys(state.user).map((key) => ({
+            const user_all = Object.keys(state.user).map((key) => ({
                 ...state.user[key],
                 id: key,
             }))
+
+            if (user_all.length) return user_all
+            else return false
         },
 
         BD_USER(state) {
