@@ -23,10 +23,10 @@ const routes = [
     },
 
     {
-        path: '/contact',
-        name: 'Contact',
+        path: '/dogovor',
+        name: 'Dogovor',
         meta: { layout: 'main', auth: true },
-        component: () => import('../views/Contact.vue'),
+        component: () => import('../views/Dogovor.vue'),
     },
 
     {

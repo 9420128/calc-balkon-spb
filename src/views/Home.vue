@@ -3,7 +3,7 @@
         <h1>Заказы</h1>
         <div class="search m-top">
             <form @submit.prevent="search_submit">
-                <input-icon icon="search" v-model="search" class="nowrap" />
+                <InputIcon icon="search" v-model="search" class="nowrap" />
             </form>
 
             <TableMy v-if="search_build" class="table-search table-hover">
@@ -50,7 +50,7 @@
                         <a
                             href="#"
                             @click.prevent="sd_remove(user.id, zakaz.id)"
-                            ><icon icon="close"></icon
+                            ><Icon icon="close"></Icon
                         ></a>
                     </td>
                 </tr>

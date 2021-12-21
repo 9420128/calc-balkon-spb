@@ -62,6 +62,7 @@ export default {
             { to: '/', text: 'Главная' },
             { to: '/price', text: 'Прайс' },
             { to: '/calc', text: 'Калькулятор' },
+            { to: '/dogovor', text: 'Договор' },
         ],
         menu_mobile: false,
     }),

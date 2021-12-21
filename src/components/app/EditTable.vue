@@ -1,161 +1,166 @@
 <template>
     <div class="edit-table">
         <div id="print">
-            <h3>
-                Спецификация №
-                <span
-                    class="edit-text"
-                    @click="edit_catalog($event.target)"
-                    data-key="spec"
-                    >{{ catalog_spec }}
-                </span>
-                от
-                <span
-                    class="edit-text"
-                    @click="edit_catalog($event.target)"
-                    data-key="data"
-                    >{{ catalog_date }}
-                </span>
-            </h3>
-            <p class="text-border">
-                Адрес:
-                <span
-                    class="edit-text"
-                    @click="edit_catalog($event.target)"
-                    data-key="adres"
-                    >{{ catalog?.adres }}
-                </span>
-            </p>
-            <div class="overlow m-top">
-                <TableMy>
-                    <thead>
-                        <tr>
-                            <th style="text-align: center; width: 1px">#</th>
-                            <th>Вид работ</th>
-                            <th style="min-width: 150px">Материал</th>
-                            <th
-                                style="text-align: center; width: 1px"
-                                colspan="2"
-                            >
-                                Ед.изм
-                            </th>
-                            <th style="text-align: center; width: 1px">
-                                Сумма
-                            </th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody v-if="sd">
-                        <tr
-                            v-for="(item, i) in filter_sd(sd)"
-                            :key="item.id"
-                            :class="{ 'tr-bg': item?.flag }"
-                        >
-                            <td nowrap>
-                                {{ i + 1 }}
-                            </td>
-                            <td
-                                @click="edit_sd($event.target)"
-                                :data-key="item.id"
-                                data-el="text"
-                            >
-                                {{ item.text }}
-                            </td>
-                            <td
-                                @click="edit_sd($event.target)"
-                                :data-key="item.id"
-                                data-el="option"
-                            >
-                                {{ item.option }}
-                            </td>
-                            <td
-                                class="text-right"
-                                @click="edit_sd($event.target)"
-                                :data-key="item.id"
-                                data-el="s"
-                            >
-                                {{ item.s }}
-                            </td>
-                            <td
-                                nowrap
-                                @click="edit_sd($event.target)"
-                                :data-key="item.id"
-                                data-el="i"
-                            >
-                                {{ item.i }}
-                            </td>
-                            <td
-                                nowrap
-                                @click="edit_sd($event.target)"
-                                :data-key="item.id"
-                                data-el="p"
-                            >
-                                {{ item.p }}
-                            </td>
-                            <td>
-                                <a
-                                    @click.prevent="sd_item_remove(item.id)"
-                                    href="#"
-                                    ><icon icon="close"
-                                /></a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </TableMy>
-            </div>
-            <div class="">
+            <div class="printTable">
                 <h3>
-                    Итого стоимость заказа:
-                    <span>{{
-                        new Intl.NumberFormat('ru-RU').format(summ)
-                    }}</span>
-                    р.
+                    Спецификация №
+                    <span
+                        class="edit-text"
+                        @click="edit_catalog($event.target)"
+                        data-key="spec"
+                        >{{ catalog_spec }}
+                    </span>
+                    от
+                    <span
+                        class="edit-text"
+                        @click="edit_catalog($event.target)"
+                        data-key="data"
+                        >{{ catalog_date }}
+                    </span>
                 </h3>
-                <div class="wrap">
-                    <p class="edit_prim">
-                        <b>Примечание:</b><br />
+                <p class="text-border">
+                    Адрес:
+                    <span
+                        class="edit-text"
+                        @click="edit_catalog($event.target)"
+                        data-key="adres"
+                        >{{ catalog?.adres }}
+                    </span>
+                </p>
+                <div class="overlow m-top">
+                    <TableMy>
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 1px">
+                                    #
+                                </th>
+                                <th>Вид работ</th>
+                                <th style="min-width: 150px">Материал</th>
+                                <th
+                                    style="text-align: center; width: 1px"
+                                    colspan="2"
+                                >
+                                    Ед.изм
+                                </th>
+                                <th style="text-align: center; width: 1px">
+                                    Сумма
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="sd">
+                            <tr
+                                v-for="(item, i) in filter_sd(sd)"
+                                :key="item.id"
+                                :class="{ 'tr-bg': item?.flag }"
+                            >
+                                <td nowrap>
+                                    {{ i + 1 }}
+                                </td>
+                                <td
+                                    @click="edit_sd($event.target)"
+                                    :data-key="item.id"
+                                    data-el="text"
+                                >
+                                    {{ item.text }}
+                                </td>
+                                <td
+                                    @click="edit_sd($event.target)"
+                                    :data-key="item.id"
+                                    data-el="option"
+                                >
+                                    {{ item.option }}
+                                </td>
+                                <td
+                                    class="text-right"
+                                    @click="edit_sd($event.target)"
+                                    :data-key="item.id"
+                                    data-el="s"
+                                >
+                                    {{ item.s }}
+                                </td>
+                                <td
+                                    nowrap
+                                    @click="edit_sd($event.target)"
+                                    :data-key="item.id"
+                                    data-el="i"
+                                >
+                                    {{ item.i }}
+                                </td>
+                                <td
+                                    nowrap
+                                    @click="edit_sd($event.target)"
+                                    :data-key="item.id"
+                                    data-el="p"
+                                >
+                                    {{ item.p }}
+                                </td>
+                                <td>
+                                    <a
+                                        @click.prevent="sd_item_remove(item.id)"
+                                        href="#"
+                                        ><icon icon="close"
+                                    /></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </TableMy>
+                </div>
+                <div class="">
+                    <h3>
+                        Итого стоимость заказа:
+                        <span>{{
+                            new Intl.NumberFormat('ru-RU').format(summ)
+                        }}</span>
+                        р.
+                    </h3>
+                    <div class="wrap">
+                        <p class="edit_prim">
+                            <b>Примечание:</b><br />
+                            <span
+                                class="edit-text"
+                                :class="{ empty: !catalog?.prim }"
+                                @click="edit_catalog($event.target)"
+                                data-key="prim"
+                                >{{ catalog?.prim }}</span
+                            >
+                        </p>
+                    </div>
+                    <p>
+                        С внутренними размерами в спецификации Заказчик
+                        согласен.С функциональным значением всех элементов
+                        изделия Заказчик согласен. Все интересующие Заказчика
+                        вопросы ему разъяснены.
+                    </p>
+                    <p class="text-border">
+                        <span>Дата монтажа:</span>
                         <span
                             class="edit-text"
-                            :class="{ empty: !catalog?.prim }"
                             @click="edit_catalog($event.target)"
-                            data-key="prim"
-                            >{{ catalog?.prim }}</span
-                        >
+                            data-key="montag"
+                            >{{ catalog?.montag }}
+                        </span>
+                    </p>
+
+                    <p class="text-border">
+                        Исполнитель:
+                        <span
+                            class="edit-text"
+                            @click="edit_catalog($event.target)"
+                            data-key="isp"
+                            >{{ catalog?.isp }}
+                        </span>
+                    </p>
+                    <p class="text-border">
+                        Заказчик:
+                        <span
+                            class="edit-text"
+                            @click="edit_catalog($event.target)"
+                            data-key="user"
+                            >{{ catalog?.user }}
+                        </span>
                     </p>
                 </div>
-                <p>
-                    С внутренними размерами в спецификации Заказчик согласен.С
-                    функциональным значением всех элементов изделия Заказчик
-                    согласен. Все интересующие Заказчика вопросы ему разъяснены.
-                </p>
-                <p class="text-border">
-                    <span>Дата монтажа:</span>
-                    <span
-                        class="edit-text"
-                        @click="edit_catalog($event.target)"
-                        data-key="montag"
-                        >{{ catalog?.montag }}
-                    </span>
-                </p>
-
-                <p class="text-border">
-                    Исполнитель:
-                    <span
-                        class="edit-text"
-                        @click="edit_catalog($event.target)"
-                        data-key="isp"
-                        >{{ catalog?.isp }}
-                    </span>
-                </p>
-                <p class="text-border">
-                    Заказчик:
-                    <span
-                        class="edit-text"
-                        @click="edit_catalog($event.target)"
-                        data-key="user"
-                        >{{ catalog?.user }}
-                    </span>
-                </p>
             </div>
         </div>
 
@@ -167,7 +172,10 @@
 
             <print />
 
-            <Btn v-if="btn_submit_visible" @click.prevent="save_bd" class="btn-prim"
+            <Btn
+                v-if="btn_submit_visible"
+                @click.prevent="save_bd"
+                class="btn-prim"
                 >Сохранить
                 <icon icon="save" />
             </Btn>
@@ -238,7 +246,7 @@ export default {
         data_text: '',
         flag_save: false,
         route_user: '',
-        route_id: ''  // id полученный при сохранении cataloga
+        route_id: '', // id полученный при сохранении cataloga
     }),
 
     mounted() {
@@ -258,13 +266,13 @@ export default {
     computed: {
         ...mapGetters(['BD_UID']),
 
-        btn_submit_visible(){
+        btn_submit_visible() {
             let flag_key = false
-            for(let i in this.sd){
-                if(this.sd[i].flag) flag_key = true
+            for (let i in this.sd) {
+                if (this.sd[i].flag) flag_key = true
             }
 
-            if(flag_key) return true
+            if (flag_key) return true
 
             return this.flag_save
         },
@@ -299,25 +307,25 @@ export default {
     },
 
     methods: {
-        modal_enter(){
-                let pressed = new Set()
-                const codes = ['ControlLeft', 'Enter']
-                document.addEventListener('keydown', (event) => {
-                    pressed.add(event.code)
-                    for (let code of codes) {
-                        if (!pressed.has(code)) {
-                            return
-                        }
+        modal_enter() {
+            let pressed = new Set()
+            const codes = ['ControlLeft', 'Enter']
+            document.addEventListener('keydown', (event) => {
+                pressed.add(event.code)
+                for (let code of codes) {
+                    if (!pressed.has(code)) {
+                        return
                     }
-                    pressed.clear()
-                    if(this.modal) {
-                        this.submit_modal_edit()
-                        this.modal = false
-                    }
-                })
-                document.addEventListener('keyup', function (event) {
-                    pressed.delete(event.code)
-                })
+                }
+                pressed.clear()
+                if (this.modal) {
+                    this.submit_modal_edit()
+                    this.modal = false
+                }
+            })
+            document.addEventListener('keyup', function (event) {
+                pressed.delete(event.code)
+            })
         },
 
         show_modal() {
@@ -333,7 +341,7 @@ export default {
             this.modal = false
         },
 
-        save_success(){
+        save_success() {
             this.flag_save = false
             this.notic('Изменения сохранены')
         },
@@ -376,7 +384,7 @@ export default {
             this.close_modal()
             this.notic('Изменения сохранены')
 
-            if(key === 'adres' && this.sd.length) return this.save_bd()
+            if (key === 'adres' && this.sd.length) return this.save_bd()
         },
 
         async sd_item_remove(id) {
@@ -388,16 +396,10 @@ export default {
         async sd_remove() {
             if (this.route_user && this.route_id) {
                 const folder_sd =
-                    'data/' +
-                    this.route_user +
-                    '/sd/' +
-                    this.route_id
+                    'data/' + this.route_user + '/sd/' + this.route_id
 
                 const folder_catalog =
-                    'data/' +
-                    this.route_user +
-                    '/catalog/' +
-                    this.route_id
+                    'data/' + this.route_user + '/catalog/' + this.route_id
 
                 try {
                     const sd_success = await this.$store.dispatch(
@@ -522,7 +524,6 @@ export default {
                         if (id && success) {
                             this.save_success()
                         }
-
                     } catch (e) {
                         console.log(e)
                     }
@@ -531,10 +532,7 @@ export default {
                 // Сохранение всех изменений сохраненного заказа глобально
                 if (this.route_id && this.route_user) {
                     catalog.folder =
-                        'data/' +
-                        this.route_user +
-                        '/catalog/' +
-                        this.route_id
+                        'data/' + this.route_user + '/catalog/' + this.route_id
 
                     sd.folder =
                         'data/' + this.route_user + '/sd/' + this.route_id
@@ -553,7 +551,6 @@ export default {
                         if (id && success) {
                             this.save_success()
                         }
-
                     } catch (e) {
                         console.log(e)
                     }
