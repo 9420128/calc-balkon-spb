@@ -106,7 +106,7 @@
                         </tbody>
                     </TableMy>
                 </div>
-                <div class="">
+                <div>
                     <h3>
                         Итого стоимость заказа:
                         <span>{{
@@ -162,6 +162,11 @@
                     </p>
                 </div>
             </div>
+            <Dogovor
+                v-if="doc_form && doc_flag"
+                :form="doc_form"
+                :flag="doc_flag"
+            />
         </div>
 
         <div class="btn-grup m-top-2">
@@ -179,6 +184,15 @@
                 >Сохранить
                 <icon icon="save" />
             </Btn>
+
+            <DogovorModal
+                :catalog_user="catalog?.user"
+                :catalog_adres="catalog?.adres"
+                :summ="summ"
+                :catalog_spec="catalog_spec"
+                :catalog_date="catalog_date"
+                @print_click="print_click"
+            />
         </div>
 
         <form @submit.prevent="submit_modal_edit">
@@ -209,18 +223,31 @@
             </Modal>
         </form>
     </div>
+    <!-- <Doc /> -->
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import Doc from '../../views/Doc.vue'
 import Btn from '../html/Btn.vue'
 import Icon from '../html/Icon.vue'
 import TableMy from '../html/Table-my.vue'
+import Dogovor from './Dogovor.vue'
+import DogovorModal from './DogovorModal.vue'
 import Modal from './Modal.vue'
 import Print from './Print.vue'
 // import Icon from '../html/Icon.vue'
 export default {
-    components: { TableMy, Icon, Modal, Print, Btn },
+    components: {
+        TableMy,
+        Icon,
+        Modal,
+        Print,
+        Btn,
+        Doc,
+        Dogovor,
+        DogovorModal,
+    },
     name: 'edit-table',
 
     props: {
@@ -247,6 +274,8 @@ export default {
         flag_save: false,
         route_user: '',
         route_id: '', // id полученный при сохранении cataloga
+        doc_form: {},
+        doc_flag: {},
     }),
 
     mounted() {
@@ -307,6 +336,11 @@ export default {
     },
 
     methods: {
+        async print_click(data_modal) {
+            this.doc_form = await data_modal.form
+            this.doc_flag = await data_modal.flag
+        },
+
         modal_enter() {
             let pressed = new Set()
             const codes = ['ControlLeft', 'Enter']

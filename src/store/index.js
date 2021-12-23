@@ -1,7 +1,8 @@
 import { createStore } from 'vuex'
-import firebase from "./firebase"
+import firebase from './firebase'
 import auth from './auth'
 import notic from '../function/notic'
+import sum_str from '../function/sum_str'
 import { zakazStore } from './zakazStore'
 
 export default createStore({
@@ -77,5 +78,6 @@ export default createStore({
         firebase,
         notic,
         zakazStore,
+        sum_str,
     },
 })

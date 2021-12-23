@@ -13,16 +13,29 @@
                             :options="BD_FIRMA"
                             @change="firma_change($event.target.value)"
                         />
-                        <input-icon label="ФИО" v-model="form.name" />
+                        <input-icon
+                            label="ФИО"
+                            v-model="form.name"
+                            :inputClass="{ error: !form.name }"
+                        />
                     </div>
 
                     <div>
-                        <input-icon label="Номер договора" v-model="form.num" />
+                        <input-icon
+                            label="Номер договора"
+                            v-model="form.num"
+                            :inputClass="{ error: !form.num }"
+                        />
                         <input-icon
                             label="Дата составления"
                             v-model="form.date"
+                            :inputClass="{ error: !form.date }"
                         />
-                        <input-icon label="Адрес" v-model="form.adres" />
+                        <input-icon
+                            label="Адрес"
+                            v-model="form.adres"
+                            :inputClass="{ error: !form.adres }"
+                        />
                         <sel
                             label="Наименование услуги"
                             :options="BD_USLUGA"
@@ -36,8 +49,13 @@
                             label="Аванс"
                             v-model="form.avans"
                             @input="ostatok_build"
+                            :inputClass="{ error: !form.avans }"
                         />
-                        <input-icon label="Остаток" v-model="form.ostatok" />
+                        <input-icon
+                            label="Остаток"
+                            v-model="form.ostatok"
+                            :inputClass="{ error: !form.ostatok }"
+                        />
                     </div>
                     <div class="wrap">
                         <checkboxes
@@ -54,12 +72,6 @@
                             name="Товарный чек"
                             :checked="flag.invois"
                             @change="flag.invois = !flag.invois"
-                        />
-                        <checkboxes
-                            v-if="flag.smeta"
-                            name="Смета"
-                            :checked="flag.smeta"
-                            @change="flag.smeta = !flag.smeta"
                         />
                     </div>
                 </grid>
@@ -105,7 +117,6 @@ export default {
             dogovor: true,
             akt: true,
             invois: true,
-            smeta: false,
         },
         god: new Date().getFullYear(),
         form: {
@@ -137,7 +148,6 @@ export default {
         catalog_date: {
             type: [String, Number],
         },
-        // firm: Object,
     },
 
     emits: ['print_click'],
@@ -178,7 +188,6 @@ export default {
             this.flag.dogovor = false
             this.flag.invois = false
             this.flag.akt = false
-            this.flag.smeta = false
         },
 
         print_click() {

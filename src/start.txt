@@ -168,6 +168,9 @@ date_filter(obj){
     })
     return arr
 }
+Текущий год
+(new Date()).getFullYear()
+
 Дата в формате числа
 Date.now()
 
@@ -192,6 +195,8 @@ this.$router.push('/edit/' + id)
                 zakaz_id: event.value,
                 status_id: id,
             })
+
+emits: ["status_change"]
             
 
 this.$store.state.statusStore.mail_user

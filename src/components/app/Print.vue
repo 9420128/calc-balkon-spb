@@ -12,6 +12,8 @@ export default {
     components: { Icon, Btn },
     methods: {
         print() {
+            this.$emit('print')
+
             let printing_css = `<style media=print>
                 * {font-family: -apple-system, BlinkMacSystemFont, "Open Sans", Arial; text-align: left;}
                 #print {padding: 0 20px}
@@ -52,8 +54,8 @@ export default {
                     left: 0;
                     right: 0;
                     text-align: center;
-                    font-size: 9px;
-                    top: 1.4em;
+                    font-size: .9em;
+                    top: 1.6em;
                 }
                 </style>`
 

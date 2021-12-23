@@ -269,14 +269,12 @@ _____________________________________________________________________
         dogovor() {
             const firm = this.form.firma
 
-            console.log(firm)
-
             let dogovor_text = '',
                 col_1,
                 col_2
             const dogovor_grid = (text_1, text_2) => {
                 return (
-                    '<div style="display: flex; justify-content: space-between;"><div style="width: 40%">' +
+                    '<div style="display: flex; justify-content: space-between;"><div style="flex: 1">' +
                     text_1 +
                     '</div><div style="width: 35%">' +
                     text_2 +
@@ -346,8 +344,6 @@ _____________________________________________________________________
 
                     el = ''
                 }
-
-                // else el = '<p>' + el + '</p>'
 
                 dogovor_text += '<p>' + el + '</p>'
             })
@@ -451,14 +447,14 @@ _____________________________________________________________________
     methods: {
         sum_str_buid(money) {
             if (!money) return ''
-            var price
-            var rub, kop, res
+            let price
+            let rub, kop, res
             let litera = ''
             let sotny = ''
             let desatky = ''
             let edinicy = ''
             let minus = ''
-            var k = 0,
+            let k = 0,
                 i,
                 j,
                 N = [
@@ -533,11 +529,11 @@ _____________________________________________________________________
                     'миллиардов',
                     'миллиардов',
                 ]
-            var M = new Array(10)
+            let M = new Array(10)
             for (j = 0; j < 10; ++j) M[j] = new Array(N.length)
             for (i = 0; i < N.length; i++)
                 for (j = 0; j < 10; j++) M[j][i] = N[k++]
-            var R = new Array(
+            let R = new Array(
                 'рублей',
                 'рубль',
                 'рубля',
@@ -549,7 +545,7 @@ _____________________________________________________________________
                 'рублей',
                 'рублей'
             )
-            var K = new Array(
+            let K = new Array(
                 'копеек',
                 'копейка',
                 'копейки',
