@@ -1,6 +1,6 @@
 <template>
     <h1 v-if="!$route.params.id">Калькулятор</h1>
-    <Tabs :tabs="id_map(BD_PRISE_TABS)" class=" m-top"/>
+    <Tabs :tabs="id_map(BD_PRISE_TABS)" class="m-top" />
     <div class="calc m-top">
         <form class="calc__form" @submit.prevent="calc_submit">
             <Card>
@@ -107,6 +107,7 @@ import InputIcon from '../components/html/InputIcon.vue'
 import Sel from '../components/html/Sel.vue'
 import Switches from '../components/html/Switches.vue'
 import Modal from '../components/app/Modal.vue'
+
 export default {
     name: 'Calc',
     components: {
@@ -157,6 +158,10 @@ export default {
         sd_bd: {
             type: [Array, Object],
         },
+    },
+
+    mounted() {
+        document.title = 'Калькулятор'
     },
 
     computed: {
@@ -325,7 +330,6 @@ export default {
         },
     },
     methods: {
-
         modal_default_submit(event) {
             if (event.checked) {
                 let sd = this.sd_arr_build()

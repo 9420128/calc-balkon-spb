@@ -72,6 +72,11 @@ export default {
         search: '',
         search_data: [],
     }),
+
+    mounted() {
+        document.title = 'calc-balkon-spb'
+    },
+
     computed: {
         ...mapGetters(['BD_USER_ALL']),
         ...mapGetters(['BD_DATA_ALL']),

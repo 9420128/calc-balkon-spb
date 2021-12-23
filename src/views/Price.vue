@@ -1,10 +1,11 @@
 <template>
-
     <div class="price">
         <h1>Прайс</h1>
         <Loader v-if="!BD_PRISE_TABS" />
 
-        <h3 v-else-if="BD_PRISE_TABS && Object.keys(BD_PRISE_TABS).length == 0">Прайс еще не заполнен</h3>
+        <h3 v-else-if="BD_PRISE_TABS && Object.keys(BD_PRISE_TABS).length == 0">
+            Прайс еще не заполнен
+        </h3>
 
         <Tabs v-else :tabs="id_map(BD_PRISE_TABS)" class="m-top" />
 
@@ -156,14 +157,8 @@
             </template>
             <template v-slot:footer>
                 <div class="btn-grup">
-                    <btn
-                        @click.prevent="close_modal"
-                    >
-                        Закрыть
-                    </btn>
-                    <btn type="submit" class="btn btn-prim">
-                        Сохранить
-                    </btn>
+                    <btn @click.prevent="close_modal"> Закрыть </btn>
+                    <btn type="submit" class="btn btn-prim"> Сохранить </btn>
                 </div>
             </template>
         </Modal>
@@ -308,9 +303,10 @@ export default {
     }),
     mounted() {
         this.modal_enter()
+        document.title = 'calc-balkon-spb Прайс'
     },
     methods: {
-        modal_enter(){
+        modal_enter() {
             let pressed = new Set()
             const codes = ['ControlLeft', 'Enter']
             document.addEventListener('keydown', (event) => {
@@ -321,7 +317,7 @@ export default {
                     }
                 }
                 pressed.clear()
-                if(this.modal) {
+                if (this.modal) {
                     this.submit_modal()
                     this.modal = false
                 }

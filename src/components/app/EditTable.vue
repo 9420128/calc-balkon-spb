@@ -418,7 +418,9 @@ export default {
             this.close_modal()
             this.notic('Изменения сохранены')
 
-            if (key === 'adres' && this.sd.length) return this.save_bd()
+            if (key === 'adres' && this.sd.length) {
+                return this.save_bd()
+            }
         },
 
         async sd_item_remove(id) {
@@ -492,6 +494,8 @@ export default {
                     .replace(/[^a-zа-яё0-9 ]/gi, '_')
                     .replace(/ /g, '_')
                     .trim()
+
+                document.title = this.catalog.key
 
                 this.catalog.data = this.catalog_date
                 this.catalog.spec = this.catalog_spec

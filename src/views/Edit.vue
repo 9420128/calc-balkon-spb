@@ -25,7 +25,8 @@ export default {
         data: {},
     }),
     async mounted() {
-        // console.log(data)
+        if (this.catalog_item && this.catalog_item.key)
+            document.title = this.catalog_item.key
     },
     computed: {
         // ...mapGetters(['BD_USER_ALL']),
