@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <h1 class="wrap">Dogovor</h1>
+        <h1 class="wrap">Договор</h1>
         <DogovorModal @print_click="print_click" />
 
         <!-- <btn class="btn-prim" @click="firma_change(firm_id)">Печать</btn> -->
